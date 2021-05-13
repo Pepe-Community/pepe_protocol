@@ -65,8 +65,8 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
     uint256 private _rTotal = (MAX - (MAX % _tTotal));
     uint256 private _tFeeTotal;
 
-    string private _name = "XBN Community Token";
-    string private _symbol = "XBC";
+    string private _name = "PEPE Community";
+    string private _symbol = "PEPE";
     uint8 private _decimals = 9;
 
     IPancakeRouter02 public immutable pancakeRouter;
