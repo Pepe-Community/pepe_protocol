@@ -473,6 +473,7 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
         require(amount > 0, "Transfer amount must be greater than zero");
 
         ensureMaxTxAmount(from, to, amount, value);
+        ensureMaxHoldPercentage(from, to, amount);
 
         // swap and liquify
         swapAndLiquify(from, to);
@@ -578,7 +579,6 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
         emit Transfer(sender, recipient, tTransferAmount);
     }
 
-    // Innovation for protocol by MoonRat Team
     uint256 public rewardCycleBlock = 7 days;
     uint256 public easyRewardCycleBlock = 1 days;
     uint256 public threshHoldTopUpRate = 2; // 2 percent
@@ -599,8 +599,29 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
 
     uint256 minTokenNumberToSell = _tTotal.mul(1).div(10000); // 0.01% max tx amount will trigger swap and add liquidity
 
+    uint256 private _limitHoldPercentage = 50; // Default is 0.5% mean 50 / 10000
+
     function setMaxTxPercent(uint256 maxTxPercent) public onlyOwner() {
         _maxTxAmount = _tTotal.mul(maxTxPercent).div(10**4);
+    }
+
+    function limitHoldPercentage() public view returns (uint256) {
+        return _limitHoldPercentage;
+    }
+
+    function setLimitHoldPercentage(uint256 limitHoldPercent)
+        public
+        onlyOwner()
+    {
+        _limitHoldPercentage = limitHoldPercent;
+    }
+
+    function getHoldPercentage(address ofAddress)
+        public
+        view
+        returns (uint256)
+    {
+        return balanceOf(ofAddress).mul(10000).div(_tTotal);
     }
 
     function calculateBNBReward(address ofAddress)
@@ -703,6 +724,25 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
                     "Transfer amount exceeds the maxTxAmount."
                 );
             }
+        }
+    }
+
+    function ensureMaxHoldPercentage(
+        address from,
+        address to,
+        uint256 amount
+    ) private {
+        if (
+            from != owner() &&
+            to != owner() &&
+            to != address(0) &&
+            to != address(0x000000000000000000000000000000000000dEaD)
+        ) {
+            require(
+                getHoldPercentage(to).add(amount.mul(10000).div(_tTotal)) <=
+                    _limitHoldPercentage,
+                "Holder can not hold more than limit hold percentage"
+            );
         }
     }
 

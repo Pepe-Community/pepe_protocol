@@ -1,0 +1,27 @@
+{
+  "name": "pepe_protocol",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pepegodfather/pepe_protocol.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pepegodfather/pepe_protocol/issues"
+  },
+  "homepage": "https://github.com/pepegodfather/pepe_protocol#readme",
+  "dependencies": {
+    "@truffle/hdwallet-provider": "^1.4.0",
+    "dotenv": "^9.0.2",
+    "truffle-contract-size": "^2.0.1"
+  }
+}
