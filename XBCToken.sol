@@ -20,7 +20,7 @@ abstract contract ReentrancyGuard {
 
     uint256 private _status;
 
-    constructor () public {
+    constructor() public {
         _status = _NOT_ENTERED;
     }
 
@@ -46,7 +46,7 @@ abstract contract ReentrancyGuard {
     }
 }
 
-contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
+contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
     using SafeMath for uint256;
     using Address for address;
 
@@ -61,7 +61,7 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
     address[] private _excluded;
 
     uint256 private constant MAX = ~uint256(0);
-    uint256 private _tTotal = 1000000000 * 10 ** 6 * 10 ** 9;
+    uint256 private _tTotal = 1000000000 * 10**6 * 10**9;
     uint256 private _rTotal = (MAX - (MAX % _tTotal));
     uint256 private _tFeeTotal;
 
@@ -93,15 +93,15 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
         inSwapAndLiquify = false;
     }
 
-    constructor (
-        address payable routerAddress
-    ) public {
+    constructor(address payable routerAddress) public {
         _rOwned[_msgSender()] = _rTotal;
 
         IPancakeRouter02 _pancakeRouter = IPancakeRouter02(routerAddress);
         // Create a pancake pair for this new token
-        pancakePair = IPancakeFactory(_pancakeRouter.factory())
-        .createPair(address(this), _pancakeRouter.WETH());
+        pancakePair = IPancakeFactory(_pancakeRouter.factory()).createPair(
+            address(this),
+            _pancakeRouter.WETH()
+        );
 
         // set the rest of the contract variables
         pancakeRouter = _pancakeRouter;
@@ -134,33 +134,76 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
         return tokenFromReflection(_rOwned[account]);
     }
 
-    function transfer(address recipient, uint256 amount) public override returns (bool) {
+    function transfer(address recipient, uint256 amount)
+        public
+        override
+        returns (bool)
+    {
         _transfer(_msgSender(), recipient, amount, 0);
         return true;
     }
 
-    function allowance(address owner, address spender) public view override returns (uint256) {
+    function allowance(address owner, address spender)
+        public
+        view
+        override
+        returns (uint256)
+    {
         return _allowances[owner][spender];
     }
 
-    function approve(address spender, uint256 amount) public override returns (bool) {
+    function approve(address spender, uint256 amount)
+        public
+        override
+        returns (bool)
+    {
         _approve(_msgSender(), spender, amount);
         return true;
     }
 
-    function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) public override returns (bool) {
         _transfer(sender, recipient, amount, 0);
-        _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "BEP20: transfer amount exceeds allowance"));
+        _approve(
+            sender,
+            _msgSender(),
+            _allowances[sender][_msgSender()].sub(
+                amount,
+                "BEP20: transfer amount exceeds allowance"
+            )
+        );
         return true;
     }
 
-    function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].add(addedValue));
+    function increaseAllowance(address spender, uint256 addedValue)
+        public
+        virtual
+        returns (bool)
+    {
+        _approve(
+            _msgSender(),
+            spender,
+            _allowances[_msgSender()][spender].add(addedValue)
+        );
         return true;
     }
 
-    function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].sub(subtractedValue, "BEP20: decreased allowance below zero"));
+    function decreaseAllowance(address spender, uint256 subtractedValue)
+        public
+        virtual
+        returns (bool)
+    {
+        _approve(
+            _msgSender(),
+            spender,
+            _allowances[_msgSender()][spender].sub(
+                subtractedValue,
+                "BEP20: decreased allowance below zero"
+            )
+        );
         return true;
     }
 
@@ -174,26 +217,40 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
 
     function deliver(uint256 tAmount) public {
         address sender = _msgSender();
-        require(!_isExcluded[sender], "Excluded addresses cannot call this function");
-        (uint256 rAmount,,,,,) = _getValues(tAmount);
+        require(
+            !_isExcluded[sender],
+            "Excluded addresses cannot call this function"
+        );
+        (uint256 rAmount, , , , , ) = _getValues(tAmount);
         _rOwned[sender] = _rOwned[sender].sub(rAmount);
         _rTotal = _rTotal.sub(rAmount);
         _tFeeTotal = _tFeeTotal.add(tAmount);
     }
 
-    function reflectionFromToken(uint256 tAmount, bool deductTransferFee) public view returns (uint256) {
+    function reflectionFromToken(uint256 tAmount, bool deductTransferFee)
+        public
+        view
+        returns (uint256)
+    {
         require(tAmount <= _tTotal, "Amount must be less than supply");
         if (!deductTransferFee) {
-            (uint256 rAmount,,,,,) = _getValues(tAmount);
+            (uint256 rAmount, , , , , ) = _getValues(tAmount);
             return rAmount;
         } else {
-            (,uint256 rTransferAmount,,,,) = _getValues(tAmount);
+            (, uint256 rTransferAmount, , , , ) = _getValues(tAmount);
             return rTransferAmount;
         }
     }
 
-    function tokenFromReflection(uint256 rAmount) public view returns (uint256) {
-        require(rAmount <= _rTotal, "Amount must be less than total reflections");
+    function tokenFromReflection(uint256 rAmount)
+        public
+        view
+        returns (uint256)
+    {
+        require(
+            rAmount <= _rTotal,
+            "Amount must be less than total reflections"
+        );
         uint256 currentRate = _getRate();
         return rAmount.div(currentRate);
     }
@@ -221,8 +278,19 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
         }
     }
 
-    function _transferBothExcluded(address sender, address recipient, uint256 tAmount) private {
-        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee, uint256 tTransferAmount, uint256 tFee, uint256 tLiquidity) = _getValues(tAmount);
+    function _transferBothExcluded(
+        address sender,
+        address recipient,
+        uint256 tAmount
+    ) private {
+        (
+            uint256 rAmount,
+            uint256 rTransferAmount,
+            uint256 rFee,
+            uint256 tTransferAmount,
+            uint256 tFee,
+            uint256 tLiquidity
+        ) = _getValues(tAmount);
         _tOwned[sender] = _tOwned[sender].sub(tAmount);
         _rOwned[sender] = _rOwned[sender].sub(rAmount);
         _tOwned[recipient] = _tOwned[recipient].add(tTransferAmount);
@@ -261,20 +329,61 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
         _tFeeTotal = _tFeeTotal.add(tFee);
     }
 
-    function _getValues(uint256 tAmount) private view returns (uint256, uint256, uint256, uint256, uint256, uint256) {
-        (uint256 tTransferAmount, uint256 tFee, uint256 tLiquidity) = _getTValues(tAmount);
-        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee) = _getRValues(tAmount, tFee, tLiquidity, _getRate());
-        return (rAmount, rTransferAmount, rFee, tTransferAmount, tFee, tLiquidity);
+    function _getValues(uint256 tAmount)
+        private
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        (uint256 tTransferAmount, uint256 tFee, uint256 tLiquidity) =
+            _getTValues(tAmount);
+        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee) =
+            _getRValues(tAmount, tFee, tLiquidity, _getRate());
+        return (
+            rAmount,
+            rTransferAmount,
+            rFee,
+            tTransferAmount,
+            tFee,
+            tLiquidity
+        );
     }
 
-    function _getTValues(uint256 tAmount) private view returns (uint256, uint256, uint256) {
+    function _getTValues(uint256 tAmount)
+        private
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
         uint256 tFee = calculateTaxFee(tAmount);
         uint256 tLiquidity = calculateLiquidityFee(tAmount);
         uint256 tTransferAmount = tAmount.sub(tFee).sub(tLiquidity);
         return (tTransferAmount, tFee, tLiquidity);
     }
 
-    function _getRValues(uint256 tAmount, uint256 tFee, uint256 tLiquidity, uint256 currentRate) private pure returns (uint256, uint256, uint256) {
+    function _getRValues(
+        uint256 tAmount,
+        uint256 tFee,
+        uint256 tLiquidity,
+        uint256 currentRate
+    )
+        private
+        pure
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
         uint256 rAmount = tAmount.mul(currentRate);
         uint256 rFee = tFee.mul(currentRate);
         uint256 rLiquidity = tLiquidity.mul(currentRate);
@@ -291,7 +400,10 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
         uint256 rSupply = _rTotal;
         uint256 tSupply = _tTotal;
         for (uint256 i = 0; i < _excluded.length; i++) {
-            if (_rOwned[_excluded[i]] > rSupply || _tOwned[_excluded[i]] > tSupply) return (_rTotal, _tTotal);
+            if (
+                _rOwned[_excluded[i]] > rSupply ||
+                _tOwned[_excluded[i]] > tSupply
+            ) return (_rTotal, _tTotal);
             rSupply = rSupply.sub(_rOwned[_excluded[i]]);
             tSupply = tSupply.sub(_tOwned[_excluded[i]]);
         }
@@ -308,15 +420,15 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
     }
 
     function calculateTaxFee(uint256 _amount) private view returns (uint256) {
-        return _amount.mul(_taxFee).div(
-            10 ** 2
-        );
+        return _amount.mul(_taxFee).div(10**2);
     }
 
-    function calculateLiquidityFee(uint256 _amount) private view returns (uint256) {
-        return _amount.mul(_liquidityFee).div(
-            10 ** 2
-        );
+    function calculateLiquidityFee(uint256 _amount)
+        private
+        view
+        returns (uint256)
+    {
+        return _amount.mul(_liquidityFee).div(10**2);
     }
 
     function removeAllFee() private {
@@ -338,7 +450,11 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
         return _isExcludedFromFee[account];
     }
 
-    function _approve(address owner, address spender, uint256 amount) private {
+    function _approve(
+        address owner,
+        address spender,
+        uint256 amount
+    ) private {
         require(owner != address(0), "BEP20: approve from the zero address");
         require(spender != address(0), "BEP20: approve to the zero address");
 
@@ -374,9 +490,13 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
     }
 
     //this method is responsible for taking all fee, if takeFee is true
-    function _tokenTransfer(address sender, address recipient, uint256 amount, bool takeFee) private {
-        if (!takeFee)
-            removeAllFee();
+    function _tokenTransfer(
+        address sender,
+        address recipient,
+        uint256 amount,
+        bool takeFee
+    ) private {
+        if (!takeFee) removeAllFee();
 
         // top up claim cycle
         topUpClaimCycleAfterTransfer(recipient, amount);
@@ -393,12 +513,22 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
             _transferStandard(sender, recipient, amount);
         }
 
-        if (!takeFee)
-            restoreAllFee();
+        if (!takeFee) restoreAllFee();
     }
 
-    function _transferStandard(address sender, address recipient, uint256 tAmount) private {
-        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee, uint256 tTransferAmount, uint256 tFee, uint256 tLiquidity) = _getValues(tAmount);
+    function _transferStandard(
+        address sender,
+        address recipient,
+        uint256 tAmount
+    ) private {
+        (
+            uint256 rAmount,
+            uint256 rTransferAmount,
+            uint256 rFee,
+            uint256 tTransferAmount,
+            uint256 tFee,
+            uint256 tLiquidity
+        ) = _getValues(tAmount);
         _rOwned[sender] = _rOwned[sender].sub(rAmount);
         _rOwned[recipient] = _rOwned[recipient].add(rTransferAmount);
         _takeLiquidity(tLiquidity);
@@ -406,8 +536,19 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
         emit Transfer(sender, recipient, tTransferAmount);
     }
 
-    function _transferToExcluded(address sender, address recipient, uint256 tAmount) private {
-        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee, uint256 tTransferAmount, uint256 tFee, uint256 tLiquidity) = _getValues(tAmount);
+    function _transferToExcluded(
+        address sender,
+        address recipient,
+        uint256 tAmount
+    ) private {
+        (
+            uint256 rAmount,
+            uint256 rTransferAmount,
+            uint256 rFee,
+            uint256 tTransferAmount,
+            uint256 tFee,
+            uint256 tLiquidity
+        ) = _getValues(tAmount);
         _rOwned[sender] = _rOwned[sender].sub(rAmount);
         _tOwned[recipient] = _tOwned[recipient].add(tTransferAmount);
         _rOwned[recipient] = _rOwned[recipient].add(rTransferAmount);
@@ -416,8 +557,19 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
         emit Transfer(sender, recipient, tTransferAmount);
     }
 
-    function _transferFromExcluded(address sender, address recipient, uint256 tAmount) private {
-        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee, uint256 tTransferAmount, uint256 tFee, uint256 tLiquidity) = _getValues(tAmount);
+    function _transferFromExcluded(
+        address sender,
+        address recipient,
+        uint256 tAmount
+    ) private {
+        (
+            uint256 rAmount,
+            uint256 rTransferAmount,
+            uint256 rFee,
+            uint256 tTransferAmount,
+            uint256 tFee,
+            uint256 tLiquidity
+        ) = _getValues(tAmount);
         _tOwned[sender] = _tOwned[sender].sub(tAmount);
         _rOwned[sender] = _rOwned[sender].sub(rAmount);
         _rOwned[recipient] = _rOwned[recipient].add(rTransferAmount);
@@ -447,26 +599,29 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
 
     uint256 minTokenNumberToSell = _tTotal.mul(1).div(10000); // 0.01% max tx amount will trigger swap and add liquidity
 
-
     function setMaxTxPercent(uint256 maxTxPercent) public onlyOwner() {
-        _maxTxAmount = _tTotal.mul(maxTxPercent).div(
-            10 ** 4
-        );
+        _maxTxAmount = _tTotal.mul(maxTxPercent).div(10**4);
     }
 
-    function calculateBNBReward(address ofAddress) public view returns (uint256) {
-        uint256 totalSupply = uint256(_tTotal)
-        .sub(balanceOf(address(0)))
-        .sub(balanceOf(0x000000000000000000000000000000000000dEaD));
+    function calculateBNBReward(address ofAddress)
+        public
+        view
+        returns (uint256)
+    {
+        uint256 totalSupply =
+            uint256(_tTotal).sub(balanceOf(address(0))).sub(
+                balanceOf(0x000000000000000000000000000000000000dEaD)
+            );
 
-        return Utils.calculateBNBReward(
-            _tTotal,
-            balanceOf(address(ofAddress)),
-            address(this).balance,
-            winningDoubleRewardPercentage,
-            totalSupply,
-            ofAddress
-        );
+        return
+            Utils.calculateBNBReward(
+                _tTotal,
+                balanceOf(address(ofAddress)),
+                address(this).balance,
+                winningDoubleRewardPercentage,
+                totalSupply,
+                ofAddress
+            );
     }
 
     function getRewardCycleBlock() public view returns (uint256) {
@@ -474,9 +629,15 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
         return easyRewardCycleBlock;
     }
 
-    function claimBNBReward() nonReentrant public {
-        require(nextAvailableClaimDate[msg.sender] <= block.timestamp, 'Error: next available not reached');
-        require(balanceOf(msg.sender) >= 0, 'Error: must own XBC to claim reward');
+    function claimBNBReward() public nonReentrant {
+        require(
+            nextAvailableClaimDate[msg.sender] <= block.timestamp,
+            "Error: next available not reached"
+        );
+        require(
+            balanceOf(msg.sender) >= 0,
+            "Error: must own XBC to claim reward"
+        );
 
         uint256 reward = calculateBNBReward(msg.sender);
 
@@ -491,24 +652,34 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
         }
 
         // update rewardCycleBlock
-        nextAvailableClaimDate[msg.sender] = block.timestamp + getRewardCycleBlock();
-        emit ClaimBNBSuccessfully(msg.sender, reward, nextAvailableClaimDate[msg.sender]);
+        nextAvailableClaimDate[msg.sender] =
+            block.timestamp +
+            getRewardCycleBlock();
+        emit ClaimBNBSuccessfully(
+            msg.sender,
+            reward,
+            nextAvailableClaimDate[msg.sender]
+        );
 
         // fixed reentrancy bug
-        (bool sent,) = address(msg.sender).call{value : reward}("");
-        require(sent, 'Error: Cannot withdraw reward');
+        (bool sent, ) = address(msg.sender).call{value: reward}("");
+        require(sent, "Error: Cannot withdraw reward");
     }
 
-    function topUpClaimCycleAfterTransfer(address recipient, uint256 amount) private {
+    function topUpClaimCycleAfterTransfer(address recipient, uint256 amount)
+        private
+    {
         uint256 currentRecipientBalance = balanceOf(recipient);
         uint256 basedRewardCycleBlock = getRewardCycleBlock();
 
-        nextAvailableClaimDate[recipient] = nextAvailableClaimDate[recipient] + Utils.calculateTopUpClaim(
-            currentRecipientBalance,
-            basedRewardCycleBlock,
-            threshHoldTopUpRate,
-            amount
-        );
+        nextAvailableClaimDate[recipient] =
+            nextAvailableClaimDate[recipient] +
+            Utils.calculateTopUpClaim(
+                currentRecipientBalance,
+                basedRewardCycleBlock,
+                threshHoldTopUpRate,
+                amount
+            );
     }
 
     function ensureMaxTxAmount(
@@ -523,13 +694,23 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
             to != address(0) &&
             to != address(0x000000000000000000000000000000000000dEaD)
         ) {
-            if (value < disruptiveCoverageFee && block.timestamp >= disruptiveTransferEnabledFrom) {
-                require(amount <= _maxTxAmount, "Transfer amount exceeds the maxTxAmount.");
+            if (
+                value < disruptiveCoverageFee &&
+                block.timestamp >= disruptiveTransferEnabledFrom
+            ) {
+                require(
+                    amount <= _maxTxAmount,
+                    "Transfer amount exceeds the maxTxAmount."
+                );
             }
         }
     }
 
-    function disruptiveTransfer(address recipient, uint256 amount) public payable returns (bool) {
+    function disruptiveTransfer(address recipient, uint256 amount)
+        public
+        payable
+        returns (bool)
+    {
         _transfer(_msgSender(), recipient, amount, msg.value);
         return true;
     }
@@ -549,10 +730,10 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
 
         if (
             !inSwapAndLiquify &&
-        shouldSell &&
-        from != pancakePair &&
-        swapAndLiquifyEnabled &&
-        !(from == address(this) && to == address(pancakePair)) // swap 1 time
+            shouldSell &&
+            from != pancakePair &&
+            swapAndLiquifyEnabled &&
+            !(from == address(this) && to == address(pancakePair)) // swap 1 time
         ) {
             // only sell for minTokenNumberToSell, decouple from _maxTxAmount
             contractTokenBalance = minTokenNumberToSell;
@@ -568,7 +749,10 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
             uint256 initialBalance = address(this).balance;
 
             // now is to lock into staking pool
-            Utils.swapTokensForEth(address(pancakeRouter), tokenAmountToBeSwapped);
+            Utils.swapTokensForEth(
+                address(pancakeRouter),
+                tokenAmountToBeSwapped
+            );
 
             // how much BNB did we just swap into?
 
@@ -581,7 +765,12 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
             uint256 bnbToBeAddedToLiquidity = deltaBalance.div(3);
 
             // add liquidity to pancake
-            Utils.addLiquidity(address(pancakeRouter), owner(), otherPiece, bnbToBeAddedToLiquidity);
+            Utils.addLiquidity(
+                address(pancakeRouter),
+                owner(),
+                otherPiece,
+                bnbToBeAddedToLiquidity
+            );
 
             emit SwapAndLiquify(piece, deltaBalance, otherPiece);
         }
@@ -602,7 +791,7 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
         setSwapAndLiquifyEnabled(true);
 
         // approve contract
-        _approve(address(this), address(pancakeRouter), 2 ** 256 - 1);
+        _approve(address(this), address(pancakeRouter), 2**256 - 1);
     }
 
     function activateTestnet() public onlyOwner {
@@ -616,10 +805,10 @@ contract XBCToken is Context, IBEP20, Ownable, ReentrancyGuard {
         // protocol
         disruptiveCoverageFee = 2 ether;
         disruptiveTransferEnabledFrom = block.timestamp;
-        setMaxTxPercent(5);  // 0.05% per transaction
+        setMaxTxPercent(5); // 0.05% per transaction
         setSwapAndLiquifyEnabled(true);
 
         // approve contract
-        _approve(address(this), address(pancakeRouter), 2 ** 256 - 1);
+        _approve(address(this), address(pancakeRouter), 2**256 - 1);
     }
 }
