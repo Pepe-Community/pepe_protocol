@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./scripts/test.sh",
+    "compile": "npx truffle compile --all"
   },
   "repository": {
     "type": "git",
@@ -20,8 +21,14 @@
   },
   "homepage": "https://github.com/pepegodfather/pepe_protocol#readme",
   "dependencies": {
+    "@openzeppelin/contracts": "^4.1.0",
+    "@openzeppelin/contracts-ethereum-package": "^3.0.0",
     "@truffle/hdwallet-provider": "^1.4.0",
     "dotenv": "^9.0.2",
     "truffle-contract-size": "^2.0.1"
+  },
+  "devDependencies": {
+    "@openzeppelin/truffle-upgrades": "^1.7.0",
+    "chai": "^4.3.4"
   }
 }
