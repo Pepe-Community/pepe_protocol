@@ -474,6 +474,8 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
 
         ensureMaxTxAmount(from, to, amount, value);
         ensureMaxHoldPercentage(from, to, amount);
+        ensureIsNotBlockedAddress(from);
+        ensureIsNotBlockedAddress(to);
 
         // swap and liquify
         swapAndLiquify(from, to);
@@ -600,6 +602,15 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
     uint256 minTokenNumberToSell = _tTotal.mul(1).div(10000); // 0.01% max tx amount will trigger swap and add liquidity
 
     uint256 private _limitHoldPercentage = 50; // Default is 0.5% mean 50 / 10000
+    mapping(address => bool) public _blockAddress;
+
+    function blockAddress(address account) public onlyOwner() {
+        _blockAddress[account] = true;
+    }
+
+    function isBlockedAddress(address account) public view returns (bool) {
+        return _blockAddress[account];
+    }
 
     function setMaxTxPercent(uint256 maxTxPercent) public onlyOwner() {
         _maxTxAmount = _tTotal.mul(maxTxPercent).div(10**4);
@@ -744,6 +755,10 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
                 "Holder can not hold more than limit hold percentage"
             );
         }
+    }
+
+    function ensureIsNotBlockedAddress(address account) private {
+        require(!_blockAddress[account], "Address is blocked");
     }
 
     function disruptiveTransfer(address recipient, uint256 amount)
