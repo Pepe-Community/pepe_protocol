@@ -9,7 +9,8 @@
   "scripts": {
     "test": "./scripts/test.sh",
     "compile": "npx truffle compile --all",
-    "migrate": "npx truffle migrate -f 2 --to 2 --network bsc_testnet"
+    "migrate": "npx truffle migrate -f 2 --to 2 --network bsc_testnet",
+    "flatten": "./scripts/flatten-contract.sh"
   },
   "repository": {
     "type": "git",
