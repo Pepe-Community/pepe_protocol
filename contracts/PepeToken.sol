@@ -848,10 +848,7 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
         rewardCycleBlock = 7 days;
         easyRewardCycleBlock = 1 days;
 
-        winningDoubleRewardPercentage = 5;
-
         // protocol
-        disruptiveCoverageFee = 2 ether;
         disruptiveTransferEnabledFrom = block.timestamp;
         setMaxTxPercent(5); // 0.05% per transaction
         setSwapAndLiquifyEnabled(true);
@@ -866,10 +863,7 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
         rewardCycleBlock = 30 minutes;
         easyRewardCycleBlock = 1 days;
 
-        winningDoubleRewardPercentage = 5;
-
         // protocol
-        disruptiveCoverageFee = 2 ether;
         disruptiveTransferEnabledFrom = block.timestamp;
         setMaxTxPercent(5); // 0.05% per transaction
         setSwapAndLiquifyEnabled(true);
