@@ -87,6 +87,14 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
         uint256 nextAvailableClaimDate
     );
 
+    event SetLiquidityFeePercent(uint256 liquidityFee);
+    event SetTaxFeePercent(uint256 taxFee);
+    event ExcludedFromFee(address excludedFromFeeAddress);
+    event IncludedInFee(address includedInFeeAddress);
+    event SetExcludeFromMaxTx(address excludedFromMaxTxAddress);
+    event SetMaxTxPercent(uint256 maxTxAmount);
+    event SetLimitHoldPercentage(uint256 limitHoldPercent);
+
     modifier lockTheSwap {
         inSwapAndLiquify = true;
         _;
@@ -256,7 +264,6 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
     }
 
     function excludeFromReward(address account) public onlyOwner() {
-        // require(account != 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D, 'We can not exclude Pancake router.');
         require(!_isExcluded[account], "Account is already excluded");
         if (_rOwned[account] > 0) {
             _tOwned[account] = tokenFromReflection(_rOwned[account]);
@@ -302,18 +309,22 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
 
     function excludeFromFee(address account) public onlyOwner {
         _isExcludedFromFee[account] = true;
+        emit ExcludedFromFee(account);
     }
 
     function includeInFee(address account) public onlyOwner {
         _isExcludedFromFee[account] = false;
+        emit IncludedInFee(account);
     }
 
     function setTaxFeePercent(uint256 taxFee) external onlyOwner() {
         _taxFee = taxFee;
+        emit SetTaxFeePercent(taxFee);
     }
 
     function setLiquidityFeePercent(uint256 liquidityFee) external onlyOwner() {
         _liquidityFee = liquidityFee;
+        emit SetLiquidityFeePercent(liquidityFee);
     }
 
     function setSwapAndLiquifyEnabled(bool _enabled) public onlyOwner {
@@ -612,6 +623,7 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
 
     function setMaxTxPercent(uint256 maxTxPercent) public onlyOwner() {
         _maxTxAmount = _tTotal.mul(maxTxPercent).div(10**4);
+        emit SetMaxTxPercent(_maxTxAmount);
     }
 
     function limitHoldPercentage() public view returns (uint256) {
@@ -623,6 +635,7 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
         onlyOwner()
     {
         _limitHoldPercentage = limitHoldPercent;
+        emit SetLimitHoldPercentage(limitHoldPercent);
     }
 
     function getHoldPercentage(address ofAddress)
