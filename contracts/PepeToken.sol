@@ -74,6 +74,29 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
 
     bool inSwapAndLiquify;
 
+    uint256 public rewardCycleBlock = 7 days;
+    uint256 public easyRewardCycleBlock = 1 days;
+    uint256 public threshHoldTopUpRate = 2; // 2 percent
+    uint256 public _maxTxAmount = _tTotal; // should be 0.01% percent per transaction, will be set again at activateContract() function
+    uint256 public disruptiveCoverageFee = 2 ether; // antiwhale
+    mapping(address => uint256) public nextAvailableClaimDate;
+    bool public swapAndLiquifyEnabled = false; // should be true
+    uint256 public disruptiveTransferEnabledFrom = 0;
+    uint256 public disableEasyRewardFrom = 0;
+    uint256 public winningDoubleRewardPercentage = 5;
+
+    uint256 public _taxFee = 2;
+    uint256 private _previousTaxFee = _taxFee;
+
+    uint256 public _liquidityFee = 8; // 4% will be added pool, 4% will be converted to BNB
+    uint256 private _previousLiquidityFee = _liquidityFee;
+    uint256 public rewardThreshold = 2 ether;
+
+    uint256 minTokenNumberToSell = _tTotal.mul(1).div(10000); // 0.01% max tx amount will trigger swap and add liquidity
+
+    uint256 private _limitHoldPercentage = 50; // Default is 0.5% mean 50 / 10000
+    mapping(address => bool) public _blockAddress;
+
     event SwapAndLiquifyEnabledUpdated(bool enabled);
     event SwapAndLiquify(
         uint256 tokensSwapped,
@@ -589,29 +612,6 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
         _reflectFee(rFee, tFee);
         emit Transfer(sender, recipient, tTransferAmount);
     }
-
-    uint256 public rewardCycleBlock = 7 days;
-    uint256 public easyRewardCycleBlock = 1 days;
-    uint256 public threshHoldTopUpRate = 2; // 2 percent
-    uint256 public _maxTxAmount = _tTotal; // should be 0.01% percent per transaction, will be set again at activateContract() function
-    uint256 public disruptiveCoverageFee = 2 ether; // antiwhale
-    mapping(address => uint256) public nextAvailableClaimDate;
-    bool public swapAndLiquifyEnabled = false; // should be true
-    uint256 public disruptiveTransferEnabledFrom = 0;
-    uint256 public disableEasyRewardFrom = 0;
-    uint256 public winningDoubleRewardPercentage = 5;
-
-    uint256 public _taxFee = 2;
-    uint256 private _previousTaxFee = _taxFee;
-
-    uint256 public _liquidityFee = 8; // 4% will be added pool, 4% will be converted to BNB
-    uint256 private _previousLiquidityFee = _liquidityFee;
-    uint256 public rewardThreshold = 2 ether;
-
-    uint256 minTokenNumberToSell = _tTotal.mul(1).div(10000); // 0.01% max tx amount will trigger swap and add liquidity
-
-    uint256 private _limitHoldPercentage = 50; // Default is 0.5% mean 50 / 10000
-    mapping(address => bool) public _blockAddress;
 
     function blockAddress(address account) public onlyOwner() {
         _blockAddress[account] = true;
