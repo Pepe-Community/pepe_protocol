@@ -665,8 +665,8 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
             "Error: next available not reached"
         );
         require(
-            balanceOf(msg.sender) >= 0,
-            "Error: must own XBC to claim reward"
+            balanceOf(msg.sender) > 0,
+            "Error: must own PEPE to claim reward"
         );
 
         uint256 reward = calculateBNBReward(msg.sender);
