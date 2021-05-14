@@ -582,7 +582,7 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
     uint256 public rewardCycleBlock = 7 days;
     uint256 public easyRewardCycleBlock = 1 days;
     uint256 public threshHoldTopUpRate = 2; // 2 percent
-    uint256 public _maxTxAmount = _tTotal; // should be 0.05% percent per transaction, will be set again at activateContract() function
+    uint256 public _maxTxAmount = _tTotal; // should be 0.01% percent per transaction, will be set again at activateContract() function
     uint256 public disruptiveCoverageFee = 2 ether; // antiwhale
     mapping(address => uint256) public nextAvailableClaimDate;
     bool public swapAndLiquifyEnabled = false; // should be true
