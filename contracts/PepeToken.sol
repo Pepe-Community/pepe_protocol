@@ -168,6 +168,7 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
     function transfer(address recipient, uint256 amount)
         public
         override
+        nonReentrant
         returns (bool)
     {
         _transfer(_msgSender(), recipient, amount, 0);
@@ -196,7 +197,7 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
         address sender,
         address recipient,
         uint256 amount
-    ) public override returns (bool) {
+    ) public override nonReentrant returns (bool) {
         _transfer(sender, recipient, amount, 0);
         _approve(
             sender,
