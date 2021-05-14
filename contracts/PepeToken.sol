@@ -78,7 +78,7 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
     event SwapAndLiquify(
         uint256 tokensSwapped,
         uint256 ethReceived,
-        uint256 tokensIntoLiqudity
+        uint256 tokensIntoLiquidity
     );
 
     event ClaimBNBSuccessfully(
