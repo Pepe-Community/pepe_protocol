@@ -75,7 +75,6 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
     bool inSwapAndLiquify;
 
     uint256 public rewardCycleBlock = 7 days;
-    uint256 public easyRewardCycleBlock = 1 days;
     uint256 public threshHoldTopUpRate = 2; // 2 percent
     uint256 public _maxTxAmount = _tTotal; // should be 0.01% percent per transaction, will be set again at activateContract() function
     uint256 public disruptiveCoverageFee = 2 ether; // antiwhale
@@ -669,8 +668,7 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
     }
 
     function getRewardCycleBlock() public view returns (uint256) {
-        if (block.timestamp >= disableEasyRewardFrom) return rewardCycleBlock;
-        return easyRewardCycleBlock;
+        return rewardCycleBlock;
     }
 
     function claimBNBReward() public nonReentrant {
@@ -847,7 +845,6 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
         // reward claim
         disableEasyRewardFrom = block.timestamp + 1 weeks;
         rewardCycleBlock = 7 days;
-        easyRewardCycleBlock = 1 days;
 
         // protocol
         disruptiveTransferEnabledFrom = block.timestamp;
@@ -862,7 +859,6 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
         // reward claim
         disableEasyRewardFrom = block.timestamp;
         rewardCycleBlock = 30 minutes;
-        easyRewardCycleBlock = 1 days;
 
         // protocol
         disruptiveTransferEnabledFrom = block.timestamp;
