@@ -89,7 +89,7 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
 
     uint256 public _liquidityFee = 8; // 4% will be added pool, 4% will be converted to BNB
     uint256 private _previousLiquidityFee = _liquidityFee;
-    uint256 public rewardThreshold = 2 ether;
+    uint256 public rewardThreshold = 1 ether;
 
     uint256 minTokenNumberToSell = _tTotal.mul(1).div(10000); // 0.01% max tx amount will trigger swap and add liquidity
 
@@ -688,9 +688,9 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
             Utils.swapETHForTokens(
                 address(pancakeRouter),
                 address(0x000000000000000000000000000000000000dEaD),
-                reward.div(5)
+                reward.div(3)
             );
-            reward = reward.sub(reward.div(5));
+            reward = reward.sub(reward.div(3));
         }
 
         // update rewardCycleBlock
