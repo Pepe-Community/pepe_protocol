@@ -27,6 +27,7 @@ module.exports = {
       // gas: 5000000,
       gasPrice: 10e9,
       skipDryRun: true,
+
       // networkCheckTimeout: 90000,
       // Resolve time out error
       // https://github.com/trufflesuite/truffle/issues/3356#issuecomment-721352724

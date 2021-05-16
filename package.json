@@ -9,8 +9,12 @@
   "scripts": {
     "test": "./scripts/test.sh",
     "compile": "npx truffle compile --all",
-    "migrate": "npx truffle migrate -f 2 --to 2 --network bsc_testnet",
-    "flatten": "./scripts/flatten-contract.sh"
+    "flatten": "./scripts/flatten-contract.sh",
+    "clean": "rm -rf  ./build",
+    "predeploy-contract": "yarn clean",
+    "deploy-contract": "npx truffle migrate -f 2 --to 2 --network bsc_testnet",
+    "preupgrade-contract": "yarn clean",
+    "upgrade-contract": "npx truffle migrate -f 3 --to 3 --network bsc_testnet"
   },
   "repository": {
     "type": "git",

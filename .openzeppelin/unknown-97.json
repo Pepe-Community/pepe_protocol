@@ -1,0 +1,1316 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0xD7D97386a245848Ef97e0A81Ee3fF74066d081f9",
+    "txHash": "0x02db4b664f6475b16a332312a57cc12ea828980bb6dfce61ae1fdbf9736fd2ff"
+  },
+  "proxies": [
+    {
+      "address": "0xe67E241BaCffb868b76e22A998d607B7129D1c1c",
+      "txHash": "0xa4482e90c90732cac8b841072516479e01c77ac14266c65207c14d12889d4f73",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "fd1874fc25b806bc0962fd368088a2e51630e37083b5c4e9b4f926b4cc868d52": {
+      "address": "0x95a2DFC6043E9906D224a5D4879Ff8B486D1ae7D",
+      "txHash": "0xd860b3ed2c249c2c4fd4ee7525f69c6043906a194fd2c18fa878924e2b6db3f4",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:21"
+          },
+          {
+            "contract": "Initializable",
+            "label": "initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:26"
+          },
+          {
+            "contract": "Initializable",
+            "label": "______gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:61"
+          },
+          {
+            "contract": "ContextUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/GSN/Context.sol:37"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_balances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "bep/BepLib.sol:99"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_allowances",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+            "src": "bep/BepLib.sol:101"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_totalSupply",
+            "type": "t_uint256",
+            "src": "bep/BepLib.sol:103"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_name",
+            "type": "t_string_storage",
+            "src": "bep/BepLib.sol:105"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_symbol",
+            "type": "t_string_storage",
+            "src": "bep/BepLib.sol:106"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_decimals",
+            "type": "t_uint8",
+            "src": "bep/BepLib.sol:107"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)44_storage",
+            "src": "bep/BepLib.sol:451"
+          },
+          {
+            "contract": "OwnableUpgradeSafe",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol:18"
+          },
+          {
+            "contract": "OwnableUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol:78"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeSafe",
+            "label": "_notEntered",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol:21"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol:63"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_rOwned",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "PepeToken.sol:61"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_tOwned",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "PepeToken.sol:62"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_allowances",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+            "src": "PepeToken.sol:63"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_isExcludedFromFee",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "PepeToken.sol:65"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_isExcluded",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "PepeToken.sol:67"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_excluded",
+            "type": "t_array(t_address)dyn_storage",
+            "src": "PepeToken.sol:69"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_tTotal",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:74"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_rTotal",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:75"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_tFeeTotal",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:76"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_name",
+            "type": "t_string_storage",
+            "src": "PepeToken.sol:78"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_symbol",
+            "type": "t_string_storage",
+            "src": "PepeToken.sol:79"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "pancakeRouter",
+            "type": "t_contract(IPancakeRouter02)3943",
+            "src": "PepeToken.sol:81"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "pancakePair",
+            "type": "t_address",
+            "src": "PepeToken.sol:82"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "inSwapAndLiquify",
+            "type": "t_bool",
+            "src": "PepeToken.sol:84"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "rewardCycleBlock",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:86"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "threshHoldTopUpRate",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:87"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_maxTxAmount",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:88"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "disruptiveCoverageFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:89"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "nextAvailableClaimDate",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "PepeToken.sol:90"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "swapAndLiquifyEnabled",
+            "type": "t_bool",
+            "src": "PepeToken.sol:91"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "disruptiveTransferEnabledFrom",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:92"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "disableEasyRewardFrom",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:93"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "winningDoubleRewardPercentage",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:94"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_taxFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:96"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_previousTaxFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:97"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_liquidityFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:99"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_previousLiquidityFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:100"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "rewardThreshold",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:101"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "minTokenNumberToSell",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:103"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_limitHoldPercentage",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:105"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_blockAddress",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "PepeToken.sol:106"
+          }
+        ],
+        "types": {
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(address => mapping(address => uint256))"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]"
+          },
+          "t_string_storage": {
+            "label": "string"
+          },
+          "t_contract(IPancakeRouter02)3943": {
+            "label": "contract IPancakeRouter02"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_uint8": {
+            "label": "uint8"
+          },
+          "t_array(t_uint256)44_storage": {
+            "label": "uint256[44]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "3091b33625f3f146a86354fb6d5ce498887e7be3273ea30bce7029942ee67953": {
+      "address": "0x70C482a81DA64E04c00810248b29320A22837A81",
+      "txHash": "0x770004169a2e2e5dd0851199a41f1aa189452af08a876a657fc29d7bbfbfa7fd",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:21"
+          },
+          {
+            "contract": "Initializable",
+            "label": "initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:26"
+          },
+          {
+            "contract": "Initializable",
+            "label": "______gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:61"
+          },
+          {
+            "contract": "ContextUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/GSN/Context.sol:37"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_balances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "bep/BepLib.sol:99"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_allowances",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+            "src": "bep/BepLib.sol:101"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_totalSupply",
+            "type": "t_uint256",
+            "src": "bep/BepLib.sol:103"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_name",
+            "type": "t_string_storage",
+            "src": "bep/BepLib.sol:105"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_symbol",
+            "type": "t_string_storage",
+            "src": "bep/BepLib.sol:106"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_decimals",
+            "type": "t_uint8",
+            "src": "bep/BepLib.sol:107"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)44_storage",
+            "src": "bep/BepLib.sol:451"
+          },
+          {
+            "contract": "OwnableUpgradeSafe",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol:18"
+          },
+          {
+            "contract": "OwnableUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol:78"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeSafe",
+            "label": "_notEntered",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol:21"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol:63"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_rOwned",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "PepeToken.sol:61"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_tOwned",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "PepeToken.sol:62"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_allowances",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+            "src": "PepeToken.sol:63"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_isExcludedFromFee",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "PepeToken.sol:65"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_isExcluded",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "PepeToken.sol:67"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_excluded",
+            "type": "t_array(t_address)dyn_storage",
+            "src": "PepeToken.sol:69"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_tTotal",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:74"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_rTotal",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:75"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_tFeeTotal",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:76"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_name",
+            "type": "t_string_storage",
+            "src": "PepeToken.sol:78"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_symbol",
+            "type": "t_string_storage",
+            "src": "PepeToken.sol:79"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "pancakeRouter",
+            "type": "t_contract(IPancakeRouter02)3943",
+            "src": "PepeToken.sol:81"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "pancakePair",
+            "type": "t_address",
+            "src": "PepeToken.sol:82"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "inSwapAndLiquify",
+            "type": "t_bool",
+            "src": "PepeToken.sol:84"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "rewardCycleBlock",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:86"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "threshHoldTopUpRate",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:87"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_maxTxAmount",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:88"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "disruptiveCoverageFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:89"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "nextAvailableClaimDate",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "PepeToken.sol:90"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "swapAndLiquifyEnabled",
+            "type": "t_bool",
+            "src": "PepeToken.sol:91"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "disruptiveTransferEnabledFrom",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:92"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "disableEasyRewardFrom",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:93"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "winningDoubleRewardPercentage",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:94"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_taxFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:96"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_previousTaxFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:97"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_liquidityFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:99"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_previousLiquidityFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:100"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "rewardThreshold",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:101"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "minTokenNumberToSell",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:103"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_limitHoldPercentage",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:105"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_blockAddress",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "PepeToken.sol:106"
+          }
+        ],
+        "types": {
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(address => mapping(address => uint256))"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]"
+          },
+          "t_string_storage": {
+            "label": "string"
+          },
+          "t_contract(IPancakeRouter02)3943": {
+            "label": "contract IPancakeRouter02"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_uint8": {
+            "label": "uint8"
+          },
+          "t_array(t_uint256)44_storage": {
+            "label": "uint256[44]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "1647c08b79eaca3800930b0f265419e74c174fd79402217dc3204d18be3e69f7": {
+      "address": "0x71b943674837826f66D8fE1356BaD10C8c7b29d0",
+      "txHash": "0x2e4af993cd777917facd9277264deb6c4be792f334581086500dc17c71388e06",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:21"
+          },
+          {
+            "contract": "Initializable",
+            "label": "initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:26"
+          },
+          {
+            "contract": "Initializable",
+            "label": "______gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:61"
+          },
+          {
+            "contract": "ContextUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/GSN/Context.sol:37"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_balances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "bep/BepLib.sol:99"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_allowances",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+            "src": "bep/BepLib.sol:101"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_totalSupply",
+            "type": "t_uint256",
+            "src": "bep/BepLib.sol:103"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_name",
+            "type": "t_string_storage",
+            "src": "bep/BepLib.sol:105"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_symbol",
+            "type": "t_string_storage",
+            "src": "bep/BepLib.sol:106"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_decimals",
+            "type": "t_uint8",
+            "src": "bep/BepLib.sol:107"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)44_storage",
+            "src": "bep/BepLib.sol:451"
+          },
+          {
+            "contract": "OwnableUpgradeSafe",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol:18"
+          },
+          {
+            "contract": "OwnableUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol:78"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeSafe",
+            "label": "_notEntered",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol:21"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol:63"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_rOwned",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "PepeToken.sol:61"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_tOwned",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "PepeToken.sol:62"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_allowances",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+            "src": "PepeToken.sol:63"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_isExcludedFromFee",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "PepeToken.sol:65"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_isExcluded",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "PepeToken.sol:67"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_excluded",
+            "type": "t_array(t_address)dyn_storage",
+            "src": "PepeToken.sol:69"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_tTotal",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:74"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_rTotal",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:75"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_tFeeTotal",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:76"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_name",
+            "type": "t_string_storage",
+            "src": "PepeToken.sol:78"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_symbol",
+            "type": "t_string_storage",
+            "src": "PepeToken.sol:79"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "pancakeRouter",
+            "type": "t_contract(IPancakeRouter02)3907",
+            "src": "PepeToken.sol:81"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "pancakePair",
+            "type": "t_address",
+            "src": "PepeToken.sol:82"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "inSwapAndLiquify",
+            "type": "t_bool",
+            "src": "PepeToken.sol:84"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "rewardCycleBlock",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:86"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "threshHoldTopUpRate",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:87"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_maxTxAmount",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:88"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "disruptiveCoverageFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:89"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "nextAvailableClaimDate",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "PepeToken.sol:90"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "swapAndLiquifyEnabled",
+            "type": "t_bool",
+            "src": "PepeToken.sol:91"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "disruptiveTransferEnabledFrom",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:92"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "disableEasyRewardFrom",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:93"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "winningDoubleRewardPercentage",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:94"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_taxFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:96"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_previousTaxFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:97"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_liquidityFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:99"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_previousLiquidityFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:100"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "rewardThreshold",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:101"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "minTokenNumberToSell",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:103"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_limitHoldPercentage",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:105"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_blockAddress",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "PepeToken.sol:106"
+          }
+        ],
+        "types": {
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(address => mapping(address => uint256))"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]"
+          },
+          "t_string_storage": {
+            "label": "string"
+          },
+          "t_contract(IPancakeRouter02)3907": {
+            "label": "contract IPancakeRouter02"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_uint8": {
+            "label": "uint8"
+          },
+          "t_array(t_uint256)44_storage": {
+            "label": "uint256[44]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "fa4def7e1fa2514317fb6aed7a46f25e2fc5b1e673afb1174436663e54649eb9": {
+      "address": "0xb87fA803eb61c362EE55df8cfA874f582D59b668",
+      "txHash": "0xdbb3dcfe89f3232551d6c69b98ca6eb230aa6f27c26764fd2ba579391ae75f20",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:21"
+          },
+          {
+            "contract": "Initializable",
+            "label": "initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:26"
+          },
+          {
+            "contract": "Initializable",
+            "label": "______gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:61"
+          },
+          {
+            "contract": "ContextUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/GSN/Context.sol:37"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_balances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "bep/BepLib.sol:99"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_allowances",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+            "src": "bep/BepLib.sol:101"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_totalSupply",
+            "type": "t_uint256",
+            "src": "bep/BepLib.sol:103"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_name",
+            "type": "t_string_storage",
+            "src": "bep/BepLib.sol:105"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_symbol",
+            "type": "t_string_storage",
+            "src": "bep/BepLib.sol:106"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "_decimals",
+            "type": "t_uint8",
+            "src": "bep/BepLib.sol:107"
+          },
+          {
+            "contract": "IBEP20UpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)44_storage",
+            "src": "bep/BepLib.sol:451"
+          },
+          {
+            "contract": "OwnableUpgradeSafe",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol:18"
+          },
+          {
+            "contract": "OwnableUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol:78"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeSafe",
+            "label": "_notEntered",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol:21"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol:63"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_rOwned",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "PepeToken.sol:61"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_tOwned",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "PepeToken.sol:62"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_allowances",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+            "src": "PepeToken.sol:63"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_isExcludedFromFee",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "PepeToken.sol:65"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_isExcluded",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "PepeToken.sol:67"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_excluded",
+            "type": "t_array(t_address)dyn_storage",
+            "src": "PepeToken.sol:69"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_tTotal",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:74"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_rTotal",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:75"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_tFeeTotal",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:76"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_name",
+            "type": "t_string_storage",
+            "src": "PepeToken.sol:78"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_symbol",
+            "type": "t_string_storage",
+            "src": "PepeToken.sol:79"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "pancakeRouter",
+            "type": "t_contract(IPancakeRouter02)3916",
+            "src": "PepeToken.sol:81"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "pancakePair",
+            "type": "t_address",
+            "src": "PepeToken.sol:82"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "inSwapAndLiquify",
+            "type": "t_bool",
+            "src": "PepeToken.sol:84"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "rewardCycleBlock",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:86"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "threshHoldTopUpRate",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:87"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_maxTxAmount",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:88"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "disruptiveCoverageFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:89"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "nextAvailableClaimDate",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "PepeToken.sol:90"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "swapAndLiquifyEnabled",
+            "type": "t_bool",
+            "src": "PepeToken.sol:91"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "disruptiveTransferEnabledFrom",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:92"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "disableEasyRewardFrom",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:93"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "winningDoubleRewardPercentage",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:94"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_taxFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:96"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_previousTaxFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:97"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_liquidityFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:99"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_previousLiquidityFee",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:100"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "rewardThreshold",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:101"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "minTokenNumberToSell",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:103"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_limitHoldPercentage",
+            "type": "t_uint256",
+            "src": "PepeToken.sol:105"
+          },
+          {
+            "contract": "PepeToken",
+            "label": "_blockAddress",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "PepeToken.sol:106"
+          }
+        ],
+        "types": {
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(address => mapping(address => uint256))"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]"
+          },
+          "t_string_storage": {
+            "label": "string"
+          },
+          "t_contract(IPancakeRouter02)3916": {
+            "label": "contract IPancakeRouter02"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_uint8": {
+            "label": "uint8"
+          },
+          "t_array(t_uint256)44_storage": {
+            "label": "uint256[44]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    }
+  }
+}

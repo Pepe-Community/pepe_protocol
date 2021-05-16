@@ -3,50 +3,58 @@ pragma experimental ABIEncoderV2;
 
 import "./bep/Utils.sol";
 
-abstract contract ReentrancyGuard {
-    // Booleans are more expensive than uint256 or any type that takes up a full
-    // word because each write operation emits an extra SLOAD to first read the
-    // slot's contents, replace the bits taken up by the boolean, and then write
-    // back. This is the compiler's defense against contract upgrades and
-    // pointer aliasing, and it cannot be disabled.
+import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 
-    // The values being non-zero value makes deployment a bit more expensive,
-    // but in exchange the refund on every call to nonReentrant will be lower in
-    // amount. Since refunds are capped to a percentage of the total
-    // transaction's gas, it is best to keep them low in cases like this one, to
-    // increase the likelihood of the full refund coming into effect.
-    uint256 private constant _NOT_ENTERED = 1;
-    uint256 private constant _ENTERED = 2;
+import "@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol";
 
-    uint256 private _status;
+// abstract contract ReentrancyGuard {
+//     // Booleans are more expensive than uint256 or any type that takes up a full
+//     // word because each write operation emits an extra SLOAD to first read the
+//     // slot's contents, replace the bits taken up by the boolean, and then write
+//     // back. This is the compiler's defense against contract upgrades and
+//     // pointer aliasing, and it cannot be disabled.
 
-    constructor() public {
-        _status = _NOT_ENTERED;
-    }
+//     // The values being non-zero value makes deployment a bit more expensive,
+//     // but in exchange the refund on every call to nonReentrant will be lower in
+//     // amount. Since refunds are capped to a percentage of the total
+//     // transaction's gas, it is best to keep them low in cases like this one, to
+//     // increase the likelihood of the full refund coming into effect.
+//     uint256 private constant _NOT_ENTERED = 1;
+//     uint256 private constant _ENTERED = 2;
 
-    /**
-     * @dev Prevents a contract from calling itself, directly or indirectly.
-     * Calling a `nonReentrant` function from another `nonReentrant`
-     * function is not supported. It is possible to prevent this from happening
-     * by making the `nonReentrant` function external, and make it call a
-     * `private` function that does the actual work.
-     */
-    modifier nonReentrant() {
-        // On the first call to nonReentrant, _notEntered will be true
-        require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
+//     uint256 private _status;
 
-        // Any calls to nonReentrant after this point will fail
-        _status = _ENTERED;
+//     constructor() public {
+//         _status = _NOT_ENTERED;
+//     }
 
-        _;
+//     /**
+//      * @dev Prevents a contract from calling itself, directly or indirectly.
+//      * Calling a `nonReentrant` function from another `nonReentrant`
+//      * function is not supported. It is possible to prevent this from happening
+//      * by making the `nonReentrant` function external, and make it call a
+//      * `private` function that does the actual work.
+//      */
+//     modifier nonReentrant() {
+//         // On the first call to nonReentrant, _notEntered will be true
+//         require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
 
-        // By storing the original value once again, a refund is triggered (see
-        // https://eips.ethereum.org/EIPS/eip-2200)
-        _status = _NOT_ENTERED;
-    }
-}
+//         // Any calls to nonReentrant after this point will fail
+//         _status = _ENTERED;
 
-contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
+//         _;
+
+//         // By storing the original value once again, a refund is triggered (see
+//         // https://eips.ethereum.org/EIPS/eip-2200)
+//         _status = _NOT_ENTERED;
+//     }
+// }
+
+contract PepeToken is
+    IBEP20UpgradeSafe,
+    OwnableUpgradeSafe,
+    ReentrancyGuardUpgradeSafe
+{
     using SafeMath for uint256;
     using Address for address;
 
@@ -61,39 +69,40 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
     address[] private _excluded;
 
     uint256 private constant MAX = ~uint256(0);
-    uint256 private _tTotal = 1000000000 * 10**6 * 10**9;
-    uint256 private _rTotal = (MAX - (MAX % _tTotal));
+    uint8 private constant DECIMALS = 9;
+
+    uint256 private _tTotal;
+    uint256 private _rTotal;
     uint256 private _tFeeTotal;
 
-    string private _name = "PEPE Community";
-    string private _symbol = "PEPE";
-    uint8 private _decimals = 9;
+    string private _name;
+    string private _symbol;
 
-    IPancakeRouter02 public immutable pancakeRouter;
-    address public immutable pancakePair;
+    IPancakeRouter02 public pancakeRouter;
+    address public pancakePair;
 
     bool inSwapAndLiquify;
 
-    uint256 public rewardCycleBlock = 7 days;
-    uint256 public threshHoldTopUpRate = 2; // 2 percent
-    uint256 public _maxTxAmount = _tTotal; // should be 0.01% percent per transaction, will be set again at activateContract() function
-    uint256 public disruptiveCoverageFee = 2 ether; // antiwhale
+    uint256 public rewardCycleBlock;
+    uint256 public threshHoldTopUpRate; // 2 percent
+    uint256 public _maxTxAmount; // should be 0.01% percent per transaction, will be set again at activateContract() function
+    uint256 public disruptiveCoverageFee; // antiwhale
     mapping(address => uint256) public nextAvailableClaimDate;
-    bool public swapAndLiquifyEnabled = false; // should be true
-    uint256 public disruptiveTransferEnabledFrom = 0;
-    uint256 public disableEasyRewardFrom = 0;
-    uint256 public winningDoubleRewardPercentage = 5;
+    bool public swapAndLiquifyEnabled; // should be true
+    uint256 public disruptiveTransferEnabledFrom;
+    uint256 public disableEasyRewardFrom;
+    uint256 public winningDoubleRewardPercentage;
 
-    uint256 public _taxFee = 2;
-    uint256 private _previousTaxFee = _taxFee;
+    uint256 public _taxFee;
+    uint256 private _previousTaxFee;
 
-    uint256 public _liquidityFee = 8; // 4% will be added pool, 4% will be converted to BNB
-    uint256 private _previousLiquidityFee = _liquidityFee;
-    uint256 public rewardThreshold = 1 ether;
+    uint256 public _liquidityFee; // 4% will be added pool, 4% will be converted to BNB
+    uint256 private _previousLiquidityFee;
+    uint256 public rewardThreshold;
 
-    uint256 minTokenNumberToSell = _tTotal.mul(1).div(10000); // 0.01% max tx amount will trigger swap and add liquidity
+    uint256 minTokenNumberToSell; // 0.01% max tx amount will trigger swap and add liquidity
 
-    uint256 private _limitHoldPercentage = 50; // Default is 0.5% mean 50 / 10000
+    uint256 private _limitHoldPercentage; // Default is 0.5% mean 50 / 10000
     mapping(address => bool) public _blockAddress;
 
     event SwapAndLiquifyEnabledUpdated(bool enabled);
@@ -123,7 +132,35 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
         inSwapAndLiquify = false;
     }
 
-    constructor(address payable routerAddress) public {
+    function initialize(address payable routerAddress) public initializer {
+        IBEP20UpgradeSafe.__ERC20_init("PEPE Community", "PEPE");
+        IBEP20UpgradeSafe._setupDecimals(uint8(DECIMALS));
+        OwnableUpgradeSafe.__Ownable_init();
+
+        _tTotal = 1000000000 * 10**6 * 10**9;
+        _rTotal = (MAX - (MAX % _tTotal));
+
+        rewardCycleBlock = 7 days;
+        threshHoldTopUpRate = 2; // 2 percent
+        _maxTxAmount = _tTotal; // should be 0.01% percent per transaction, will be set again at activateContract() function
+        disruptiveCoverageFee = 2 ether; // antiwhale
+
+        swapAndLiquifyEnabled = false; // should be true
+        disruptiveTransferEnabledFrom = 0;
+        disableEasyRewardFrom = 0;
+        winningDoubleRewardPercentage = 5;
+
+        _taxFee = 2;
+        _previousTaxFee = _taxFee;
+
+        _liquidityFee = 8; // 4% will be added pool, 4% will be converted to BNB
+        _previousLiquidityFee = _liquidityFee;
+        rewardThreshold = 1 ether;
+
+        minTokenNumberToSell = _tTotal.mul(1).div(10000); // 0.01% max tx amount will trigger swap and add liquidity
+
+        _limitHoldPercentage = 50; // Default is 0.5% mean 50 / 10000
+
         _rOwned[_msgSender()] = _rTotal;
 
         IPancakeRouter02 _pancakeRouter = IPancakeRouter02(routerAddress);
@@ -143,17 +180,25 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
         emit Transfer(address(0), _msgSender(), _tTotal);
     }
 
-    function name() public view returns (string memory) {
-        return _name;
-    }
+    // constructor(address payable routerAddress) public {
+    //     _rOwned[_msgSender()] = _rTotal;
 
-    function symbol() public view returns (string memory) {
-        return _symbol;
-    }
+    //     IPancakeRouter02 _pancakeRouter = IPancakeRouter02(routerAddress);
+    //     // Create a pancake pair for this new token
+    //     pancakePair = IPancakeFactory(_pancakeRouter.factory()).createPair(
+    //         address(this),
+    //         _pancakeRouter.WETH()
+    //     );
 
-    function decimals() public view returns (uint8) {
-        return _decimals;
-    }
+    //     // set the rest of the contract variables
+    //     pancakeRouter = _pancakeRouter;
+
+    //     //exclude owner and this contract from fee
+    //     _isExcludedFromFee[owner()] = true;
+    //     _isExcludedFromFee[address(this)] = true;
+
+    //     emit Transfer(address(0), _msgSender(), _tTotal);
+    // }
 
     function totalSupply() public view override returns (uint256) {
         return _tTotal;
@@ -212,6 +257,7 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
     function increaseAllowance(address spender, uint256 addedValue)
         public
         virtual
+        override
         returns (bool)
     {
         _approve(
@@ -225,6 +271,7 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
     function decreaseAllowance(address spender, uint256 subtractedValue)
         public
         virtual
+        override
         returns (bool)
     {
         _approve(
@@ -484,17 +531,17 @@ contract PepeToken is Context, IBEP20, Ownable, ReentrancyGuard {
         return _isExcludedFromFee[account];
     }
 
-    function _approve(
-        address owner,
-        address spender,
-        uint256 amount
-    ) private {
-        require(owner != address(0), "BEP20: approve from the zero address");
-        require(spender != address(0), "BEP20: approve to the zero address");
+    // function _approve(
+    //     address owner,
+    //     address spender,
+    //     uint256 amount
+    // )   private {
+    //     require(owner != address(0), "BEP20: approve from the zero address");
+    //     require(spender != address(0), "BEP20: approve to the zero address");
 
-        _allowances[owner][spender] = amount;
-        emit Approval(owner, spender, amount);
-    }
+    //     _allowances[owner][spender] = amount;
+    //     emit Approval(owner, spender, amount);
+    // }
 
     function _transfer(
         address from,

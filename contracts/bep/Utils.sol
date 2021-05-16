@@ -1,27 +1,44 @@
 pragma solidity >=0.6.8;
 
 import "./BepLib.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 
 library Utils {
     using SafeMath for uint256;
 
-    function random(uint256 from, uint256 to, uint256 salty) private view returns (uint256) {
-        uint256 seed = uint256(
-            keccak256(
-                abi.encodePacked(
-                    block.timestamp + block.difficulty +
-                    ((uint256(keccak256(abi.encodePacked(block.coinbase)))) / (now)) +
-                    block.gaslimit +
-                    ((uint256(keccak256(abi.encodePacked(msg.sender)))) / (now)) +
-                    block.number +
-                    salty
+    function random(
+        uint256 from,
+        uint256 to,
+        uint256 salty
+    ) private view returns (uint256) {
+        uint256 seed =
+            uint256(
+                keccak256(
+                    abi.encodePacked(
+                        block.timestamp +
+                            block.difficulty +
+                            ((
+                                uint256(
+                                    keccak256(abi.encodePacked(block.coinbase))
+                                )
+                            ) / (now)) +
+                            block.gaslimit +
+                            ((
+                                uint256(keccak256(abi.encodePacked(msg.sender)))
+                            ) / (now)) +
+                            block.number +
+                            salty
+                    )
                 )
-            )
-        );
+            );
         return seed.mod(to - from) + from;
     }
 
-    function isLotteryWon(uint256 salty, uint256 winningDoubleRewardPercentage) private view returns (bool) {
+    function isLotteryWon(uint256 salty, uint256 winningDoubleRewardPercentage)
+        private
+        view
+        returns (bool)
+    {
         uint256 luckyNumber = random(0, 100, salty);
         uint256 winPercentage = winningDoubleRewardPercentage;
         return luckyNumber <= winPercentage;
@@ -38,7 +55,8 @@ library Utils {
         uint256 bnbPool = currentBNBPool;
 
         // calculate reward to send
-        bool isLotteryWonOnClaim = isLotteryWon(currentBalance, winningDoubleRewardPercentage);
+        bool isLotteryWonOnClaim =
+            isLotteryWon(currentBalance, winningDoubleRewardPercentage);
         uint256 multiplier = 100;
 
         if (isLotteryWonOnClaim) {
@@ -46,7 +64,10 @@ library Utils {
         }
 
         // now calculate reward
-        uint256 reward = bnbPool.mul(multiplier).mul(currentBalance).div(100).div(totalSupply);
+        uint256 reward =
+            bnbPool.mul(multiplier).mul(currentBalance).div(100).div(
+                totalSupply
+            );
 
         return reward;
     }
@@ -59,12 +80,12 @@ library Utils {
     ) public returns (uint256) {
         if (currentRecipientBalance == 0) {
             return block.timestamp + basedRewardCycleBlock;
-        }
-        else {
+        } else {
             uint256 rate = amount.mul(100).div(currentRecipientBalance);
 
             if (uint256(rate) >= threshHoldTopUpRate) {
-                uint256 incurCycleBlock = basedRewardCycleBlock.mul(uint256(rate)).div(100);
+                uint256 incurCycleBlock =
+                    basedRewardCycleBlock.mul(uint256(rate)).div(100);
 
                 if (incurCycleBlock >= basedRewardCycleBlock) {
                     incurCycleBlock = basedRewardCycleBlock;
@@ -77,10 +98,9 @@ library Utils {
         }
     }
 
-    function swapTokensForEth(
-        address routerAddress,
-        uint256 tokenAmount
-    ) public {
+    function swapTokensForEth(address routerAddress, uint256 tokenAmount)
+        public
+    {
         IPancakeRouter02 pancakeRouter = IPancakeRouter02(routerAddress);
 
         // generate the pancake pair path of token -> weth
@@ -111,7 +131,9 @@ library Utils {
         path[1] = address(this);
 
         // make the swap
-        pancakeRouter.swapExactETHForTokensSupportingFeeOnTransferTokens{value: ethAmount}(
+        pancakeRouter.swapExactETHForTokensSupportingFeeOnTransferTokens{
+            value: ethAmount
+        }(
             0, // accept any amount of BNB
             path,
             address(recipient),
@@ -128,7 +150,7 @@ library Utils {
         IPancakeRouter02 pancakeRouter = IPancakeRouter02(routerAddress);
 
         // add the liquidity
-        pancakeRouter.addLiquidityETH{value : ethAmount}(
+        pancakeRouter.addLiquidityETH{value: ethAmount}(
             address(this),
             tokenAmount,
             0, // slippage is unavoidable
