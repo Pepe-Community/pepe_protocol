@@ -2083,7 +2083,6 @@ contract PepeToken is
     function transfer(address recipient, uint256 amount)
         public
         override
-        nonReentrant
         returns (bool)
     {
         _transfer(_msgSender(), recipient, amount, 0);
@@ -2112,7 +2111,7 @@ contract PepeToken is
         address sender,
         address recipient,
         uint256 amount
-    ) public override nonReentrant returns (bool) {
+    ) public override returns (bool) {
         _transfer(sender, recipient, amount, 0);
         _approve(
             sender,

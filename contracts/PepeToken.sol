@@ -4,51 +4,7 @@ pragma experimental ABIEncoderV2;
 import "./bep/Utils.sol";
 
 import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
-
 import "@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol";
-
-// abstract contract ReentrancyGuard {
-//     // Booleans are more expensive than uint256 or any type that takes up a full
-//     // word because each write operation emits an extra SLOAD to first read the
-//     // slot's contents, replace the bits taken up by the boolean, and then write
-//     // back. This is the compiler's defense against contract upgrades and
-//     // pointer aliasing, and it cannot be disabled.
-
-//     // The values being non-zero value makes deployment a bit more expensive,
-//     // but in exchange the refund on every call to nonReentrant will be lower in
-//     // amount. Since refunds are capped to a percentage of the total
-//     // transaction's gas, it is best to keep them low in cases like this one, to
-//     // increase the likelihood of the full refund coming into effect.
-//     uint256 private constant _NOT_ENTERED = 1;
-//     uint256 private constant _ENTERED = 2;
-
-//     uint256 private _status;
-
-//     constructor() public {
-//         _status = _NOT_ENTERED;
-//     }
-
-//     /**
-//      * @dev Prevents a contract from calling itself, directly or indirectly.
-//      * Calling a `nonReentrant` function from another `nonReentrant`
-//      * function is not supported. It is possible to prevent this from happening
-//      * by making the `nonReentrant` function external, and make it call a
-//      * `private` function that does the actual work.
-//      */
-//     modifier nonReentrant() {
-//         // On the first call to nonReentrant, _notEntered will be true
-//         require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
-
-//         // Any calls to nonReentrant after this point will fail
-//         _status = _ENTERED;
-
-//         _;
-
-//         // By storing the original value once again, a refund is triggered (see
-//         // https://eips.ethereum.org/EIPS/eip-2200)
-//         _status = _NOT_ENTERED;
-//     }
-// }
 
 contract PepeToken is
     IBEP20UpgradeSafe,
@@ -147,7 +103,7 @@ contract PepeToken is
 
         swapAndLiquifyEnabled = false; // should be true
         disruptiveTransferEnabledFrom = 0;
-        disableEasyRewardFrom = 0;
+
         winningDoubleRewardPercentage = 5;
 
         _taxFee = 2;
@@ -180,26 +136,6 @@ contract PepeToken is
         emit Transfer(address(0), _msgSender(), _tTotal);
     }
 
-    // constructor(address payable routerAddress) public {
-    //     _rOwned[_msgSender()] = _rTotal;
-
-    //     IPancakeRouter02 _pancakeRouter = IPancakeRouter02(routerAddress);
-    //     // Create a pancake pair for this new token
-    //     pancakePair = IPancakeFactory(_pancakeRouter.factory()).createPair(
-    //         address(this),
-    //         _pancakeRouter.WETH()
-    //     );
-
-    //     // set the rest of the contract variables
-    //     pancakeRouter = _pancakeRouter;
-
-    //     //exclude owner and this contract from fee
-    //     _isExcludedFromFee[owner()] = true;
-    //     _isExcludedFromFee[address(this)] = true;
-
-    //     emit Transfer(address(0), _msgSender(), _tTotal);
-    // }
-
     function totalSupply() public view override returns (uint256) {
         return _tTotal;
     }
@@ -212,7 +148,6 @@ contract PepeToken is
     function transfer(address recipient, uint256 amount)
         public
         override
-        nonReentrant
         returns (bool)
     {
         _transfer(_msgSender(), recipient, amount, 0);
@@ -241,7 +176,7 @@ contract PepeToken is
         address sender,
         address recipient,
         uint256 amount
-    ) public override nonReentrant returns (bool) {
+    ) public override returns (bool) {
         _transfer(sender, recipient, amount, 0);
         _approve(
             sender,
@@ -530,18 +465,6 @@ contract PepeToken is
     function isExcludedFromFee(address account) public view returns (bool) {
         return _isExcludedFromFee[account];
     }
-
-    // function _approve(
-    //     address owner,
-    //     address spender,
-    //     uint256 amount
-    // )   private {
-    //     require(owner != address(0), "BEP20: approve from the zero address");
-    //     require(spender != address(0), "BEP20: approve to the zero address");
-
-    //     _allowances[owner][spender] = amount;
-    //     emit Approval(owner, spender, amount);
-    // }
 
     function _transfer(
         address from,
@@ -890,7 +813,6 @@ contract PepeToken is
 
     function activateContract() public onlyOwner {
         // reward claim
-        disableEasyRewardFrom = block.timestamp + 1 weeks;
         rewardCycleBlock = 7 days;
 
         // protocol
@@ -904,7 +826,6 @@ contract PepeToken is
 
     function activateTestnet() public onlyOwner {
         // reward claim
-        disableEasyRewardFrom = block.timestamp;
         rewardCycleBlock = 30 minutes;
 
         // protocol
