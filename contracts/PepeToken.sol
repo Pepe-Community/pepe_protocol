@@ -5,6 +5,7 @@ import "./bep/Utils.sol";
 
 import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/utils/EnumerableSet.sol";
 
 contract PepeToken is
     IBEP20UpgradeSafe,
@@ -13,6 +14,7 @@ contract PepeToken is
 {
     using SafeMath for uint256;
     using Address for address;
+    using EnumerableSet for EnumerableSet.AddressSet;
 
     mapping(address => uint256) private _rOwned;
     mapping(address => uint256) private _tOwned;
@@ -22,7 +24,9 @@ contract PepeToken is
 
     mapping(address => bool) private _isExcluded;
 
-    address[] private _excluded;
+    // address[] private _excluded;
+    // Declare a set state variable
+    EnumerableSet.AddressSet private _excluded;
 
     uint256 private constant MAX = ~uint256(0);
     uint8 private constant DECIMALS = 9;
@@ -274,19 +278,16 @@ contract PepeToken is
             _tOwned[account] = tokenFromReflection(_rOwned[account]);
         }
         _isExcluded[account] = true;
-        _excluded.push(account);
+        EnumerableSet.add(_excluded, account);
+        // _excluded.push(account);
     }
 
     function includeInReward(address account) external onlyOwner() {
         require(_isExcluded[account], "Account is not excluded");
-        for (uint256 i = 0; i < _excluded.length; i++) {
-            if (_excluded[i] == account) {
-                _excluded[i] = _excluded[_excluded.length - 1];
-                _tOwned[account] = 0;
-                _isExcluded[account] = false;
-                _excluded.pop();
-                break;
-            }
+        if (EnumerableSet.contains(_excluded, account)) {
+            _tOwned[account] = 0;
+            _isExcluded[account] = false;
+            EnumerableSet.remove(_excluded, account);
         }
     }
 
@@ -415,13 +416,13 @@ contract PepeToken is
     function _getCurrentSupply() private view returns (uint256, uint256) {
         uint256 rSupply = _rTotal;
         uint256 tSupply = _tTotal;
-        for (uint256 i = 0; i < _excluded.length; i++) {
+        for (uint256 i = 0; i < EnumerableSet.length(_excluded); i++) {
             if (
-                _rOwned[_excluded[i]] > rSupply ||
-                _tOwned[_excluded[i]] > tSupply
+                _rOwned[EnumerableSet.at(_excluded, i)] > rSupply ||
+                _tOwned[EnumerableSet.at(_excluded, i)] > tSupply
             ) return (_rTotal, _tTotal);
-            rSupply = rSupply.sub(_rOwned[_excluded[i]]);
-            tSupply = tSupply.sub(_tOwned[_excluded[i]]);
+            rSupply = rSupply.sub(_rOwned[EnumerableSet.at(_excluded, i)]);
+            tSupply = tSupply.sub(_tOwned[EnumerableSet.at(_excluded, i)]);
         }
         if (rSupply < _rTotal.div(_tTotal)) return (_rTotal, _tTotal);
         return (rSupply, tSupply);
