@@ -1870,6 +1870,250 @@ contract ReentrancyGuardUpgradeSafe is Initializable {
     uint256[49] private __gap;
 }
 
+// File: @openzeppelin/contracts-ethereum-package/contracts/utils/EnumerableSet.sol
+
+pragma solidity ^0.6.0;
+
+/**
+ * @dev Library for managing
+ * https://en.wikipedia.org/wiki/Set_(abstract_data_type)[sets] of primitive
+ * types.
+ *
+ * Sets have the following properties:
+ *
+ * - Elements are added, removed, and checked for existence in constant time
+ * (O(1)).
+ * - Elements are enumerated in O(n). No guarantees are made on the ordering.
+ *
+ * ```
+ * contract Example {
+ *     // Add the library methods
+ *     using EnumerableSet for EnumerableSet.AddressSet;
+ *
+ *     // Declare a set state variable
+ *     EnumerableSet.AddressSet private mySet;
+ * }
+ * ```
+ *
+ * As of v3.0.0, only sets of type `address` (`AddressSet`) and `uint256`
+ * (`UintSet`) are supported.
+ */
+library EnumerableSet {
+    // To implement this library for multiple types with as little code
+    // repetition as possible, we write it in terms of a generic Set type with
+    // bytes32 values.
+    // The Set implementation uses private functions, and user-facing
+    // implementations (such as AddressSet) are just wrappers around the
+    // underlying Set.
+    // This means that we can only create new EnumerableSets for types that fit
+    // in bytes32.
+
+    struct Set {
+        // Storage of set values
+        bytes32[] _values;
+
+        // Position of the value in the `values` array, plus 1 because index 0
+        // means a value is not in the set.
+        mapping (bytes32 => uint256) _indexes;
+    }
+
+    /**
+     * @dev Add a value to a set. O(1).
+     *
+     * Returns true if the value was added to the set, that is if it was not
+     * already present.
+     */
+    function _add(Set storage set, bytes32 value) private returns (bool) {
+        if (!_contains(set, value)) {
+            set._values.push(value);
+            // The value is stored at length-1, but we add 1 to all indexes
+            // and use 0 as a sentinel value
+            set._indexes[value] = set._values.length;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @dev Removes a value from a set. O(1).
+     *
+     * Returns true if the value was removed from the set, that is if it was
+     * present.
+     */
+    function _remove(Set storage set, bytes32 value) private returns (bool) {
+        // We read and store the value's index to prevent multiple reads from the same storage slot
+        uint256 valueIndex = set._indexes[value];
+
+        if (valueIndex != 0) { // Equivalent to contains(set, value)
+            // To delete an element from the _values array in O(1), we swap the element to delete with the last one in
+            // the array, and then remove the last element (sometimes called as 'swap and pop').
+            // This modifies the order of the array, as noted in {at}.
+
+            uint256 toDeleteIndex = valueIndex - 1;
+            uint256 lastIndex = set._values.length - 1;
+
+            // When the value to delete is the last one, the swap operation is unnecessary. However, since this occurs
+            // so rarely, we still do the swap anyway to avoid the gas cost of adding an 'if' statement.
+
+            bytes32 lastvalue = set._values[lastIndex];
+
+            // Move the last value to the index where the value to delete is
+            set._values[toDeleteIndex] = lastvalue;
+            // Update the index for the moved value
+            set._indexes[lastvalue] = toDeleteIndex + 1; // All indexes are 1-based
+
+            // Delete the slot where the moved value was stored
+            set._values.pop();
+
+            // Delete the index for the deleted slot
+            delete set._indexes[value];
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @dev Returns true if the value is in the set. O(1).
+     */
+    function _contains(Set storage set, bytes32 value) private view returns (bool) {
+        return set._indexes[value] != 0;
+    }
+
+    /**
+     * @dev Returns the number of values on the set. O(1).
+     */
+    function _length(Set storage set) private view returns (uint256) {
+        return set._values.length;
+    }
+
+   /**
+    * @dev Returns the value stored at position `index` in the set. O(1).
+    *
+    * Note that there are no guarantees on the ordering of values inside the
+    * array, and it may change when more values are added or removed.
+    *
+    * Requirements:
+    *
+    * - `index` must be strictly less than {length}.
+    */
+    function _at(Set storage set, uint256 index) private view returns (bytes32) {
+        require(set._values.length > index, "EnumerableSet: index out of bounds");
+        return set._values[index];
+    }
+
+    // AddressSet
+
+    struct AddressSet {
+        Set _inner;
+    }
+
+    /**
+     * @dev Add a value to a set. O(1).
+     *
+     * Returns true if the value was added to the set, that is if it was not
+     * already present.
+     */
+    function add(AddressSet storage set, address value) internal returns (bool) {
+        return _add(set._inner, bytes32(uint256(value)));
+    }
+
+    /**
+     * @dev Removes a value from a set. O(1).
+     *
+     * Returns true if the value was removed from the set, that is if it was
+     * present.
+     */
+    function remove(AddressSet storage set, address value) internal returns (bool) {
+        return _remove(set._inner, bytes32(uint256(value)));
+    }
+
+    /**
+     * @dev Returns true if the value is in the set. O(1).
+     */
+    function contains(AddressSet storage set, address value) internal view returns (bool) {
+        return _contains(set._inner, bytes32(uint256(value)));
+    }
+
+    /**
+     * @dev Returns the number of values in the set. O(1).
+     */
+    function length(AddressSet storage set) internal view returns (uint256) {
+        return _length(set._inner);
+    }
+
+   /**
+    * @dev Returns the value stored at position `index` in the set. O(1).
+    *
+    * Note that there are no guarantees on the ordering of values inside the
+    * array, and it may change when more values are added or removed.
+    *
+    * Requirements:
+    *
+    * - `index` must be strictly less than {length}.
+    */
+    function at(AddressSet storage set, uint256 index) internal view returns (address) {
+        return address(uint256(_at(set._inner, index)));
+    }
+
+
+    // UintSet
+
+    struct UintSet {
+        Set _inner;
+    }
+
+    /**
+     * @dev Add a value to a set. O(1).
+     *
+     * Returns true if the value was added to the set, that is if it was not
+     * already present.
+     */
+    function add(UintSet storage set, uint256 value) internal returns (bool) {
+        return _add(set._inner, bytes32(value));
+    }
+
+    /**
+     * @dev Removes a value from a set. O(1).
+     *
+     * Returns true if the value was removed from the set, that is if it was
+     * present.
+     */
+    function remove(UintSet storage set, uint256 value) internal returns (bool) {
+        return _remove(set._inner, bytes32(value));
+    }
+
+    /**
+     * @dev Returns true if the value is in the set. O(1).
+     */
+    function contains(UintSet storage set, uint256 value) internal view returns (bool) {
+        return _contains(set._inner, bytes32(value));
+    }
+
+    /**
+     * @dev Returns the number of values on the set. O(1).
+     */
+    function length(UintSet storage set) internal view returns (uint256) {
+        return _length(set._inner);
+    }
+
+   /**
+    * @dev Returns the value stored at position `index` in the set. O(1).
+    *
+    * Note that there are no guarantees on the ordering of values inside the
+    * array, and it may change when more values are added or removed.
+    *
+    * Requirements:
+    *
+    * - `index` must be strictly less than {length}.
+    */
+    function at(UintSet storage set, uint256 index) internal view returns (uint256) {
+        return uint256(_at(set._inner, index));
+    }
+}
+
 // File: contracts/PepeToken.sol
 
 pragma solidity >=0.6.8;
@@ -1878,48 +2122,6 @@ pragma experimental ABIEncoderV2;
 
 
 
-// abstract contract ReentrancyGuard {
-//     // Booleans are more expensive than uint256 or any type that takes up a full
-//     // word because each write operation emits an extra SLOAD to first read the
-//     // slot's contents, replace the bits taken up by the boolean, and then write
-//     // back. This is the compiler's defense against contract upgrades and
-//     // pointer aliasing, and it cannot be disabled.
-
-//     // The values being non-zero value makes deployment a bit more expensive,
-//     // but in exchange the refund on every call to nonReentrant will be lower in
-//     // amount. Since refunds are capped to a percentage of the total
-//     // transaction's gas, it is best to keep them low in cases like this one, to
-//     // increase the likelihood of the full refund coming into effect.
-//     uint256 private constant _NOT_ENTERED = 1;
-//     uint256 private constant _ENTERED = 2;
-
-//     uint256 private _status;
-
-//     constructor() public {
-//         _status = _NOT_ENTERED;
-//     }
-
-//     /**
-//      * @dev Prevents a contract from calling itself, directly or indirectly.
-//      * Calling a `nonReentrant` function from another `nonReentrant`
-//      * function is not supported. It is possible to prevent this from happening
-//      * by making the `nonReentrant` function external, and make it call a
-//      * `private` function that does the actual work.
-//      */
-//     modifier nonReentrant() {
-//         // On the first call to nonReentrant, _notEntered will be true
-//         require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
-
-//         // Any calls to nonReentrant after this point will fail
-//         _status = _ENTERED;
-
-//         _;
-
-//         // By storing the original value once again, a refund is triggered (see
-//         // https://eips.ethereum.org/EIPS/eip-2200)
-//         _status = _NOT_ENTERED;
-//     }
-// }
 
 contract PepeToken is
     IBEP20UpgradeSafe,
@@ -1928,6 +2130,7 @@ contract PepeToken is
 {
     using SafeMath for uint256;
     using Address for address;
+    using EnumerableSet for EnumerableSet.AddressSet;
 
     mapping(address => uint256) private _rOwned;
     mapping(address => uint256) private _tOwned;
@@ -1937,7 +2140,9 @@ contract PepeToken is
 
     mapping(address => bool) private _isExcluded;
 
-    address[] private _excluded;
+    // address[] private _excluded;
+    // Declare a set state variable
+    EnumerableSet.AddressSet private _excluded;
 
     uint256 private constant MAX = ~uint256(0);
     uint8 private constant DECIMALS = 9;
@@ -2018,7 +2223,7 @@ contract PepeToken is
 
         swapAndLiquifyEnabled = false; // should be true
         disruptiveTransferEnabledFrom = 0;
-        disableEasyRewardFrom = 0;
+
         winningDoubleRewardPercentage = 5;
 
         _taxFee = 2;
@@ -2050,26 +2255,6 @@ contract PepeToken is
 
         emit Transfer(address(0), _msgSender(), _tTotal);
     }
-
-    // constructor(address payable routerAddress) public {
-    //     _rOwned[_msgSender()] = _rTotal;
-
-    //     IPancakeRouter02 _pancakeRouter = IPancakeRouter02(routerAddress);
-    //     // Create a pancake pair for this new token
-    //     pancakePair = IPancakeFactory(_pancakeRouter.factory()).createPair(
-    //         address(this),
-    //         _pancakeRouter.WETH()
-    //     );
-
-    //     // set the rest of the contract variables
-    //     pancakeRouter = _pancakeRouter;
-
-    //     //exclude owner and this contract from fee
-    //     _isExcludedFromFee[owner()] = true;
-    //     _isExcludedFromFee[address(this)] = true;
-
-    //     emit Transfer(address(0), _msgSender(), _tTotal);
-    // }
 
     function totalSupply() public view override returns (uint256) {
         return _tTotal;
@@ -2111,7 +2296,7 @@ contract PepeToken is
         address sender,
         address recipient,
         uint256 amount
-    ) public override returns (bool) {
+    ) public override nonReentrant returns (bool) {
         _transfer(sender, recipient, amount, 0);
         _approve(
             sender,
@@ -2209,19 +2394,16 @@ contract PepeToken is
             _tOwned[account] = tokenFromReflection(_rOwned[account]);
         }
         _isExcluded[account] = true;
-        _excluded.push(account);
+        EnumerableSet.add(_excluded, account);
+        // _excluded.push(account);
     }
 
     function includeInReward(address account) external onlyOwner() {
         require(_isExcluded[account], "Account is not excluded");
-        for (uint256 i = 0; i < _excluded.length; i++) {
-            if (_excluded[i] == account) {
-                _excluded[i] = _excluded[_excluded.length - 1];
-                _tOwned[account] = 0;
-                _isExcluded[account] = false;
-                _excluded.pop();
-                break;
-            }
+        if (EnumerableSet.contains(_excluded, account)) {
+            _tOwned[account] = 0;
+            _isExcluded[account] = false;
+            EnumerableSet.remove(_excluded, account);
         }
     }
 
@@ -2350,13 +2532,13 @@ contract PepeToken is
     function _getCurrentSupply() private view returns (uint256, uint256) {
         uint256 rSupply = _rTotal;
         uint256 tSupply = _tTotal;
-        for (uint256 i = 0; i < _excluded.length; i++) {
+        for (uint256 i = 0; i < EnumerableSet.length(_excluded); i++) {
             if (
-                _rOwned[_excluded[i]] > rSupply ||
-                _tOwned[_excluded[i]] > tSupply
+                _rOwned[EnumerableSet.at(_excluded, i)] > rSupply ||
+                _tOwned[EnumerableSet.at(_excluded, i)] > tSupply
             ) return (_rTotal, _tTotal);
-            rSupply = rSupply.sub(_rOwned[_excluded[i]]);
-            tSupply = tSupply.sub(_tOwned[_excluded[i]]);
+            rSupply = rSupply.sub(_rOwned[EnumerableSet.at(_excluded, i)]);
+            tSupply = tSupply.sub(_tOwned[EnumerableSet.at(_excluded, i)]);
         }
         if (rSupply < _rTotal.div(_tTotal)) return (_rTotal, _tTotal);
         return (rSupply, tSupply);
@@ -2400,18 +2582,6 @@ contract PepeToken is
     function isExcludedFromFee(address account) public view returns (bool) {
         return _isExcludedFromFee[account];
     }
-
-    // function _approve(
-    //     address owner,
-    //     address spender,
-    //     uint256 amount
-    // )   private {
-    //     require(owner != address(0), "BEP20: approve from the zero address");
-    //     require(spender != address(0), "BEP20: approve to the zero address");
-
-    //     _allowances[owner][spender] = amount;
-    //     emit Approval(owner, spender, amount);
-    // }
 
     function _transfer(
         address from,
@@ -2760,7 +2930,6 @@ contract PepeToken is
 
     function activateContract() public onlyOwner {
         // reward claim
-        disableEasyRewardFrom = block.timestamp + 1 weeks;
         rewardCycleBlock = 7 days;
 
         // protocol
@@ -2774,7 +2943,6 @@ contract PepeToken is
 
     function activateTestnet() public onlyOwner {
         // reward claim
-        disableEasyRewardFrom = block.timestamp;
         rewardCycleBlock = 30 minutes;
 
         // protocol

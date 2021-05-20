@@ -180,7 +180,7 @@ contract PepeToken is
         address sender,
         address recipient,
         uint256 amount
-    ) public override returns (bool) {
+    ) public override nonReentrant returns (bool) {
         _transfer(sender, recipient, amount, 0);
         _approve(
             sender,
@@ -324,11 +324,15 @@ contract PepeToken is
     }
 
     function setTaxFeePercent(uint256 taxFee) external onlyOwner() {
+        require(taxFee > 0, "Tax fee must be greater than 0%");
+        require(taxFee < 15, "Tax fee must be lower than 15%");
         _taxFee = taxFee;
         emit SetTaxFeePercent(taxFee);
     }
 
     function setLiquidityFeePercent(uint256 liquidityFee) external onlyOwner() {
+        require(liquidityFee > 0, "Liquidity fee must be greater than 0%");
+        require(liquidityFee < 10, "Liquidity fee must be lower than 10%");
         _liquidityFee = liquidityFee;
         emit SetLiquidityFeePercent(liquidityFee);
     }
@@ -593,6 +597,8 @@ contract PepeToken is
     }
 
     function setMaxTxPercent(uint256 maxTxPercent) public onlyOwner() {
+        require(maxTxPercent > 0, "Max Tx Percent must be greater than 1%");
+        require(maxTxPercent < 500, "Max Tx Percent must be lower than 10%");
         _maxTxAmount = _tTotal.mul(maxTxPercent).div(10**4);
         emit SetMaxTxPercent(_maxTxAmount);
     }
@@ -605,6 +611,11 @@ contract PepeToken is
         public
         onlyOwner()
     {
+        require(limitHoldPercent > 0, "Max Tx Percent must be greater than 0%");
+        require(
+            limitHoldPercent < 1000,
+            "Max Tx Percent must be lower than 10%"
+        );
         _limitHoldPercentage = limitHoldPercent;
         emit SetLimitHoldPercentage(limitHoldPercent);
     }
