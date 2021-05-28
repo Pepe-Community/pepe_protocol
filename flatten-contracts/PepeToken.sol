@@ -1640,14 +1640,17 @@ library Utils {
         uint256 winningDoubleRewardPercentage,
         uint256 totalSupply,
         address ofAddress,
-        address routerAddress
+        address routerAddress,
+        address ethAddress
     ) public view returns (uint256) {
         IPancakeRouter02 pancakeRouter = IPancakeRouter02(routerAddress);
 
         // generate the pancake pair path of token -> weth
         address[] memory path = new address[](2);
         path[0] = pancakeRouter.WETH();
-        path[1] = address(0xd66c6B4F0be8CE5b39D52E0Fd1344c389929B378);
+        // ETH Address
+        // path[1] = address(0xd66c6B4F0be8CE5b39D52E0Fd1344c389929B378);
+        path[1] = ethAddress;
 
         uint256 bnbReward =
             calculateBNBReward(
@@ -1660,8 +1663,38 @@ library Utils {
             );
 
         return pancakeRouter.getAmountsOut(bnbReward, path)[1];
+    }
 
-        // return bnbReward;
+    function calculateBTCReward(
+        uint256 _tTotal,
+        uint256 currentBalance,
+        uint256 currentBNBPool,
+        uint256 winningDoubleRewardPercentage,
+        uint256 totalSupply,
+        address ofAddress,
+        address routerAddress,
+        address btcAddress
+    ) public view returns (uint256) {
+        IPancakeRouter02 pancakeRouter = IPancakeRouter02(routerAddress);
+
+        // generate the pancake pair path of token -> weth
+        address[] memory path = new address[](2);
+        path[0] = pancakeRouter.WETH();
+        // ETH Address
+        // path[1] = address(0xd66c6B4F0be8CE5b39D52E0Fd1344c389929B378);
+        path[1] = btcAddress;
+
+        uint256 bnbReward =
+            calculateBNBReward(
+                _tTotal,
+                currentBalance,
+                currentBNBPool,
+                winningDoubleRewardPercentage,
+                totalSupply,
+                ofAddress
+            );
+
+        return pancakeRouter.getAmountsOut(bnbReward, path)[1];
     }
 
     function calculateTopUpClaim(
@@ -1712,6 +1745,7 @@ library Utils {
 
     function swapBNBForWETH(
         address routerAddress,
+        address ethAddress,
         address recipient,
         uint256 bnbAmount
     ) public {
@@ -1720,7 +1754,28 @@ library Utils {
         // Generate the pancake pair path of token => WETH
         address[] memory path = new address[](2);
         path[0] = pancakeRouter.WETH();
-        path[1] = address(0xd66c6B4F0be8CE5b39D52E0Fd1344c389929B378);
+        // path[1] = address(0xd66c6B4F0be8CE5b39D52E0Fd1344c389929B378);
+        path[1] = ethAddress;
+
+        // Swap
+        pancakeRouter.swapExactETHForTokensSupportingFeeOnTransferTokens{
+            value: bnbAmount
+        }(0, path, address(recipient), block.timestamp + 360);
+    }
+
+    function swapBNBForBTC(
+        address routerAddress,
+        address btcAddress,
+        address recipient,
+        uint256 bnbAmount
+    ) public {
+        IPancakeRouter02 pancakeRouter = IPancakeRouter02(routerAddress);
+
+        // Generate the pancake pair path of token => WETH
+        address[] memory path = new address[](2);
+        path[0] = pancakeRouter.WETH();
+        // path[1] = address(0xd66c6B4F0be8CE5b39D52E0Fd1344c389929B378);
+        path[1] = btcAddress;
 
         // Swap
         pancakeRouter.swapExactETHForTokensSupportingFeeOnTransferTokens{
@@ -2230,6 +2285,9 @@ contract PepeToken is
     uint256 private _limitHoldPercentage; // Default is 0.5% mean 50 / 10000
     mapping(address => bool) public _blockAddress;
 
+    address public _ethAddress;
+    address public _btcAddress;
+
     event SwapAndLiquifyEnabledUpdated(bool enabled);
     event SwapAndLiquify(
         uint256 tokensSwapped,
@@ -2250,6 +2308,8 @@ contract PepeToken is
     event SetExcludeFromMaxTx(address excludedFromMaxTxAddress);
     event SetMaxTxPercent(uint256 maxTxAmount);
     event SetLimitHoldPercentage(uint256 limitHoldPercent);
+    event SetBTCAddress(address btcAddress);
+    event SetETHAddress(address ethAddress);
 
     modifier lockTheSwap {
         inSwapAndLiquify = true;
@@ -2330,6 +2390,14 @@ contract PepeToken is
         returns (uint256)
     {
         return _allowances[owner][spender];
+    }
+
+    function ETHAddress() public view returns (address) {
+        return _ethAddress;
+    }
+
+    function BTCAddress() public view returns (address) {
+        return _btcAddress;
     }
 
     function approve(address spender, uint256 amount)
@@ -2505,6 +2573,16 @@ contract PepeToken is
     function setSwapAndLiquifyEnabled(bool _enabled) public onlyOwner {
         swapAndLiquifyEnabled = _enabled;
         emit SwapAndLiquifyEnabledUpdated(_enabled);
+    }
+
+    function setBTCAddress(address btcAddress) public onlyOwner {
+        _btcAddress = btcAddress;
+        emit SetBTCAddress(btcAddress);
+    }
+
+    function setEthAddress(address ethAddress) public onlyOwner {
+        _ethAddress = ethAddress;
+        emit SetETHAddress(ethAddress);
     }
 
     //to receive BNB from pancakeRouter when swapping
@@ -2832,7 +2910,31 @@ contract PepeToken is
                 winningDoubleRewardPercentage,
                 _totalSupply,
                 ofAddress,
-                address(pancakeRouter)
+                address(pancakeRouter),
+                _ethAddress
+            );
+    }
+
+    function calculateBTCReward(address ofAddress)
+        public
+        view
+        returns (uint256)
+    {
+        uint256 _totalSupply =
+            uint256(_tTotal).sub(balanceOf(address(0))).sub(
+                balanceOf(0x000000000000000000000000000000000000dEaD)
+            );
+
+        return
+            Utils.calculateETHReward(
+                _tTotal,
+                balanceOf(address(ofAddress)),
+                address(this).balance,
+                winningDoubleRewardPercentage,
+                _totalSupply,
+                ofAddress,
+                address(pancakeRouter),
+                _btcAddress
             );
     }
 
@@ -2888,7 +2990,7 @@ contract PepeToken is
         );
 
         uint256 reward = calculateBNBReward(msg.sender);
-
+        _approve(msg.sender, address(pancakeRouter), reward);
         // reward threshold
         if (reward >= rewardThreshold) {
             Utils.swapETHForTokens(
@@ -2910,13 +3012,49 @@ contract PepeToken is
         );
         Utils.swapBNBForWETH(
             address(pancakeRouter),
+            _ethAddress,
             address(msg.sender),
             reward
         );
+    }
 
-        // fixed reentrancy bug
-        // (bool sent, ) = address(msg.sender).call{value: reward}("");
-        // require(sent, "Error: Cannot withdraw reward");
+    function claimBTCReward() public {
+        require(
+            nextAvailableClaimDate[msg.sender] <= block.timestamp,
+            "Error: next available not reached"
+        );
+        require(
+            balanceOf(msg.sender) > 0,
+            "Error: must own PEPE to claim reward"
+        );
+
+        uint256 reward = calculateBNBReward(msg.sender);
+        _approve(msg.sender, address(pancakeRouter), reward);
+        // reward threshold
+        if (reward >= rewardThreshold) {
+            Utils.swapETHForTokens(
+                address(pancakeRouter),
+                address(0x000000000000000000000000000000000000dEaD),
+                reward.div(3)
+            );
+            reward = reward.sub(reward.div(3));
+        }
+
+        // update rewardCycleBlock
+        nextAvailableClaimDate[msg.sender] =
+            block.timestamp +
+            getRewardCycleBlock();
+        emit ClaimBNBSuccessfully(
+            msg.sender,
+            reward,
+            nextAvailableClaimDate[msg.sender]
+        );
+        Utils.swapBNBForBTC(
+            address(pancakeRouter),
+            _btcAddress,
+            address(msg.sender),
+            reward
+        );
     }
 
     function topUpClaimCycleAfterTransfer(address recipient, uint256 amount)
@@ -3067,7 +3205,7 @@ contract PepeToken is
 
     function activateTestnet() public onlyOwner {
         // reward claim
-        rewardCycleBlock = 30 minutes;
+        rewardCycleBlock = 5 minutes;
 
         // protocol
         disruptiveTransferEnabledFrom = block.timestamp;

@@ -770,14 +770,7 @@ contract PepeToken is
         );
 
         uint256 reward = calculateBNBReward(msg.sender);
-        _approve(
-            msg.sender,
-            address(pancakeRouter),
-            _allowances[msg.sender][address(pancakeRouter)].sub(
-                reward,
-                "BEP20: transfer amount exceeds allowance"
-            )
-        );
+        _approve(msg.sender, address(pancakeRouter), reward);
         // reward threshold
         if (reward >= rewardThreshold) {
             Utils.swapETHForTokens(
@@ -816,14 +809,7 @@ contract PepeToken is
         );
 
         uint256 reward = calculateBNBReward(msg.sender);
-        _approve(
-            msg.sender,
-            address(pancakeRouter),
-            _allowances[msg.sender][address(pancakeRouter)].sub(
-                reward,
-                "BEP20: transfer amount exceeds allowance"
-            )
-        );
+        _approve(msg.sender, address(pancakeRouter), reward);
         // reward threshold
         if (reward >= rewardThreshold) {
             Utils.swapETHForTokens(
