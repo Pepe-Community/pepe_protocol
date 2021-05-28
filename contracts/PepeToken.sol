@@ -65,6 +65,9 @@ contract PepeToken is
     uint256 private _limitHoldPercentage; // Default is 0.5% mean 50 / 10000
     mapping(address => bool) public _blockAddress;
 
+    address public _ethAddress;
+    address public _btcAddress;
+
     event SwapAndLiquifyEnabledUpdated(bool enabled);
     event SwapAndLiquify(
         uint256 tokensSwapped,
@@ -85,6 +88,8 @@ contract PepeToken is
     event SetExcludeFromMaxTx(address excludedFromMaxTxAddress);
     event SetMaxTxPercent(uint256 maxTxAmount);
     event SetLimitHoldPercentage(uint256 limitHoldPercent);
+    event SetBTCAddress(address btcAddress);
+    event SetETHAddress(address ethAddress);
 
     modifier lockTheSwap {
         inSwapAndLiquify = true;
@@ -167,6 +172,14 @@ contract PepeToken is
         return _allowances[owner][spender];
     }
 
+    function ETHAddress() public view returns (address) {
+        return _ethAddress;
+    }
+
+    function BTCAddress() public view returns (address) {
+        return _btcAddress;
+    }
+
     function approve(address spender, uint256 amount)
         public
         override
@@ -180,7 +193,7 @@ contract PepeToken is
         address sender,
         address recipient,
         uint256 amount
-    ) public override nonReentrant returns (bool) {
+    ) public override returns (bool) {
         _transfer(sender, recipient, amount, 0);
         _approve(
             sender,
@@ -340,6 +353,16 @@ contract PepeToken is
     function setSwapAndLiquifyEnabled(bool _enabled) public onlyOwner {
         swapAndLiquifyEnabled = _enabled;
         emit SwapAndLiquifyEnabledUpdated(_enabled);
+    }
+
+    function setBTCAddress(address btcAddress) public onlyOwner {
+        _btcAddress = btcAddress;
+        emit SetBTCAddress(btcAddress);
+    }
+
+    function setEthAddress(address ethAddress) public onlyOwner {
+        _ethAddress = ethAddress;
+        emit SetETHAddress(ethAddress);
     }
 
     //to receive BNB from pancakeRouter when swapping
@@ -649,6 +672,52 @@ contract PepeToken is
             );
     }
 
+    function calculateETHReward(address ofAddress)
+        public
+        view
+        returns (uint256)
+    {
+        uint256 _totalSupply =
+            uint256(_tTotal).sub(balanceOf(address(0))).sub(
+                balanceOf(0x000000000000000000000000000000000000dEaD)
+            );
+
+        return
+            Utils.calculateETHReward(
+                _tTotal,
+                balanceOf(address(ofAddress)),
+                address(this).balance,
+                winningDoubleRewardPercentage,
+                _totalSupply,
+                ofAddress,
+                address(pancakeRouter),
+                _ethAddress
+            );
+    }
+
+    function calculateBTCReward(address ofAddress)
+        public
+        view
+        returns (uint256)
+    {
+        uint256 _totalSupply =
+            uint256(_tTotal).sub(balanceOf(address(0))).sub(
+                balanceOf(0x000000000000000000000000000000000000dEaD)
+            );
+
+        return
+            Utils.calculateETHReward(
+                _tTotal,
+                balanceOf(address(ofAddress)),
+                address(this).balance,
+                winningDoubleRewardPercentage,
+                _totalSupply,
+                ofAddress,
+                address(pancakeRouter),
+                _btcAddress
+            );
+    }
+
     function getRewardCycleBlock() public view returns (uint256) {
         return rewardCycleBlock;
     }
@@ -688,6 +757,98 @@ contract PepeToken is
         // fixed reentrancy bug
         (bool sent, ) = address(msg.sender).call{value: reward}("");
         require(sent, "Error: Cannot withdraw reward");
+    }
+
+    function claimETHReward() public {
+        require(
+            nextAvailableClaimDate[msg.sender] <= block.timestamp,
+            "Error: next available not reached"
+        );
+        require(
+            balanceOf(msg.sender) > 0,
+            "Error: must own PEPE to claim reward"
+        );
+
+        uint256 reward = calculateBNBReward(msg.sender);
+        _approve(
+            msg.sender,
+            address(pancakeRouter),
+            _allowances[msg.sender][address(pancakeRouter)].sub(
+                reward,
+                "BEP20: transfer amount exceeds allowance"
+            )
+        );
+        // reward threshold
+        if (reward >= rewardThreshold) {
+            Utils.swapETHForTokens(
+                address(pancakeRouter),
+                address(0x000000000000000000000000000000000000dEaD),
+                reward.div(3)
+            );
+            reward = reward.sub(reward.div(3));
+        }
+
+        // update rewardCycleBlock
+        nextAvailableClaimDate[msg.sender] =
+            block.timestamp +
+            getRewardCycleBlock();
+        emit ClaimBNBSuccessfully(
+            msg.sender,
+            reward,
+            nextAvailableClaimDate[msg.sender]
+        );
+        Utils.swapBNBForWETH(
+            address(pancakeRouter),
+            _ethAddress
+            address(msg.sender),
+            reward
+        );
+    }
+
+    function claimBTCReward() public {
+        require(
+            nextAvailableClaimDate[msg.sender] <= block.timestamp,
+            "Error: next available not reached"
+        );
+        require(
+            balanceOf(msg.sender) > 0,
+            "Error: must own PEPE to claim reward"
+        );
+
+        uint256 reward = calculateBNBReward(msg.sender);
+        _approve(
+            msg.sender,
+            address(pancakeRouter),
+            _allowances[msg.sender][address(pancakeRouter)].sub(
+                reward,
+                "BEP20: transfer amount exceeds allowance"
+            )
+        );
+        // reward threshold
+        if (reward >= rewardThreshold) {
+            Utils.swapETHForTokens(
+                address(pancakeRouter),
+                address(0x000000000000000000000000000000000000dEaD),
+                reward.div(3)
+            );
+            reward = reward.sub(reward.div(3));
+        }
+
+        // update rewardCycleBlock
+        nextAvailableClaimDate[msg.sender] =
+            block.timestamp +
+            getRewardCycleBlock();
+        emit ClaimBNBSuccessfully(
+            msg.sender,
+            reward,
+            nextAvailableClaimDate[msg.sender]
+        );
+        Utils.swapBNBForBTC(
+            address(pancakeRouter),
+            _btcAddress,
+            address(msg.sender),
+            reward
+        );
     }
 
     function topUpClaimCycleAfterTransfer(address recipient, uint256 amount)
@@ -838,7 +999,7 @@ contract PepeToken is
 
     function activateTestnet() public onlyOwner {
         // reward claim
-        rewardCycleBlock = 30 minutes;
+        rewardCycleBlock = 5 minutes;
 
         // protocol
         disruptiveTransferEnabledFrom = block.timestamp;

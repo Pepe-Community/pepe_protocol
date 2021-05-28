@@ -72,6 +72,70 @@ library Utils {
         return reward;
     }
 
+    function calculateETHReward(
+        uint256 _tTotal,
+        uint256 currentBalance,
+        uint256 currentBNBPool,
+        uint256 winningDoubleRewardPercentage,
+        uint256 totalSupply,
+        address ofAddress,
+        address routerAddress,
+        address ethAddress
+    ) public view returns (uint256) {
+        IPancakeRouter02 pancakeRouter = IPancakeRouter02(routerAddress);
+
+        // generate the pancake pair path of token -> weth
+        address[] memory path = new address[](2);
+        path[0] = pancakeRouter.WETH();
+        // ETH Address
+        // path[1] = address(0xd66c6B4F0be8CE5b39D52E0Fd1344c389929B378);
+        path[1] = ethAddress;
+
+        uint256 bnbReward =
+            calculateBNBReward(
+                _tTotal,
+                currentBalance,
+                currentBNBPool,
+                winningDoubleRewardPercentage,
+                totalSupply,
+                ofAddress
+            );
+
+        return pancakeRouter.getAmountsOut(bnbReward, path)[1];
+    }
+
+    function calculateBTCReward(
+        uint256 _tTotal,
+        uint256 currentBalance,
+        uint256 currentBNBPool,
+        uint256 winningDoubleRewardPercentage,
+        uint256 totalSupply,
+        address ofAddress,
+        address routerAddress,
+        address btcAddress
+    ) public view returns (uint256) {
+        IPancakeRouter02 pancakeRouter = IPancakeRouter02(routerAddress);
+
+        // generate the pancake pair path of token -> weth
+        address[] memory path = new address[](2);
+        path[0] = pancakeRouter.WETH();
+        // ETH Address
+        // path[1] = address(0xd66c6B4F0be8CE5b39D52E0Fd1344c389929B378);
+        path[1] = btcAddress;
+
+        uint256 bnbReward =
+            calculateBNBReward(
+                _tTotal,
+                currentBalance,
+                currentBNBPool,
+                winningDoubleRewardPercentage,
+                totalSupply,
+                ofAddress
+            );
+
+        return pancakeRouter.getAmountsOut(bnbReward, path)[1];
+    }
+
     function calculateTopUpClaim(
         uint256 currentRecipientBalance,
         uint256 basedRewardCycleBlock,
@@ -116,6 +180,46 @@ library Utils {
             address(this),
             block.timestamp
         );
+    }
+
+    function swapBNBForWETH(
+        address routerAddress,
+        address ethAddress,
+        address recipient,
+        uint256 bnbAmount
+    ) public {
+        IPancakeRouter02 pancakeRouter = IPancakeRouter02(routerAddress);
+
+        // Generate the pancake pair path of token => WETH
+        address[] memory path = new address[](2);
+        path[0] = pancakeRouter.WETH();
+        // path[1] = address(0xd66c6B4F0be8CE5b39D52E0Fd1344c389929B378);
+        path[1] = ethAddress;
+
+        // Swap
+        pancakeRouter.swapExactETHForTokensSupportingFeeOnTransferTokens{
+            value: bnbAmount
+        }(0, path, address(recipient), block.timestamp + 360);
+    }
+
+    function swapBNBForBTC(
+        address routerAddress,
+        address btcAddress,
+        address recipient,
+        uint256 bnbAmount
+    ) public {
+        IPancakeRouter02 pancakeRouter = IPancakeRouter02(routerAddress);
+
+        // Generate the pancake pair path of token => WETH
+        address[] memory path = new address[](2);
+        path[0] = pancakeRouter.WETH();
+        // path[1] = address(0xd66c6B4F0be8CE5b39D52E0Fd1344c389929B378);
+        path[1] = btcAddress;
+
+        // Swap
+        pancakeRouter.swapExactETHForTokensSupportingFeeOnTransferTokens{
+            value: bnbAmount
+        }(0, path, address(recipient), block.timestamp + 360);
     }
 
     function swapETHForTokens(

@@ -1633,6 +1633,37 @@ library Utils {
         return reward;
     }
 
+    function calculateETHReward(
+        uint256 _tTotal,
+        uint256 currentBalance,
+        uint256 currentBNBPool,
+        uint256 winningDoubleRewardPercentage,
+        uint256 totalSupply,
+        address ofAddress,
+        address routerAddress
+    ) public view returns (uint256) {
+        IPancakeRouter02 pancakeRouter = IPancakeRouter02(routerAddress);
+
+        // generate the pancake pair path of token -> weth
+        address[] memory path = new address[](2);
+        path[0] = pancakeRouter.WETH();
+        path[1] = address(0xd66c6B4F0be8CE5b39D52E0Fd1344c389929B378);
+
+        uint256 bnbReward =
+            calculateBNBReward(
+                _tTotal,
+                currentBalance,
+                currentBNBPool,
+                winningDoubleRewardPercentage,
+                totalSupply,
+                ofAddress
+            );
+
+        return pancakeRouter.getAmountsOut(bnbReward, path)[1];
+
+        // return bnbReward;
+    }
+
     function calculateTopUpClaim(
         uint256 currentRecipientBalance,
         uint256 basedRewardCycleBlock,
@@ -1677,6 +1708,24 @@ library Utils {
             address(this),
             block.timestamp
         );
+    }
+
+    function swapBNBForWETH(
+        address routerAddress,
+        address recipient,
+        uint256 bnbAmount
+    ) public {
+        IPancakeRouter02 pancakeRouter = IPancakeRouter02(routerAddress);
+
+        // Generate the pancake pair path of token => WETH
+        address[] memory path = new address[](2);
+        path[0] = pancakeRouter.WETH();
+        path[1] = address(0xd66c6B4F0be8CE5b39D52E0Fd1344c389929B378);
+
+        // Swap
+        pancakeRouter.swapExactETHForTokensSupportingFeeOnTransferTokens{
+            value: bnbAmount
+        }(0, path, address(recipient), block.timestamp + 360);
     }
 
     function swapETHForTokens(
@@ -2296,7 +2345,7 @@ contract PepeToken is
         address sender,
         address recipient,
         uint256 amount
-    ) public override nonReentrant returns (bool) {
+    ) public override returns (bool) {
         _transfer(sender, recipient, amount, 0);
         _approve(
             sender,
@@ -2440,11 +2489,15 @@ contract PepeToken is
     }
 
     function setTaxFeePercent(uint256 taxFee) external onlyOwner() {
+        require(taxFee > 0, "Tax fee must be greater than 0%");
+        require(taxFee < 15, "Tax fee must be lower than 15%");
         _taxFee = taxFee;
         emit SetTaxFeePercent(taxFee);
     }
 
     function setLiquidityFeePercent(uint256 liquidityFee) external onlyOwner() {
+        require(liquidityFee > 0, "Liquidity fee must be greater than 0%");
+        require(liquidityFee < 10, "Liquidity fee must be lower than 10%");
         _liquidityFee = liquidityFee;
         emit SetLiquidityFeePercent(liquidityFee);
     }
@@ -2709,6 +2762,8 @@ contract PepeToken is
     }
 
     function setMaxTxPercent(uint256 maxTxPercent) public onlyOwner() {
+        require(maxTxPercent > 0, "Max Tx Percent must be greater than 1%");
+        require(maxTxPercent < 500, "Max Tx Percent must be lower than 10%");
         _maxTxAmount = _tTotal.mul(maxTxPercent).div(10**4);
         emit SetMaxTxPercent(_maxTxAmount);
     }
@@ -2721,6 +2776,11 @@ contract PepeToken is
         public
         onlyOwner()
     {
+        require(limitHoldPercent > 0, "Max Tx Percent must be greater than 0%");
+        require(
+            limitHoldPercent < 1000,
+            "Max Tx Percent must be lower than 10%"
+        );
         _limitHoldPercentage = limitHoldPercent;
         emit SetLimitHoldPercentage(limitHoldPercent);
     }
@@ -2751,6 +2811,28 @@ contract PepeToken is
                 winningDoubleRewardPercentage,
                 totalSupply,
                 ofAddress
+            );
+    }
+
+    function calculateETHReward(address ofAddress)
+        public
+        view
+        returns (uint256)
+    {
+        uint256 _totalSupply =
+            uint256(_tTotal).sub(balanceOf(address(0))).sub(
+                balanceOf(0x000000000000000000000000000000000000dEaD)
+            );
+
+        return
+            Utils.calculateETHReward(
+                _tTotal,
+                balanceOf(address(ofAddress)),
+                address(this).balance,
+                winningDoubleRewardPercentage,
+                _totalSupply,
+                ofAddress,
+                address(pancakeRouter)
             );
     }
 
@@ -2793,6 +2875,48 @@ contract PepeToken is
         // fixed reentrancy bug
         (bool sent, ) = address(msg.sender).call{value: reward}("");
         require(sent, "Error: Cannot withdraw reward");
+    }
+
+    function claimETHReward() public {
+        require(
+            nextAvailableClaimDate[msg.sender] <= block.timestamp,
+            "Error: next available not reached"
+        );
+        require(
+            balanceOf(msg.sender) > 0,
+            "Error: must own PEPE to claim reward"
+        );
+
+        uint256 reward = calculateBNBReward(msg.sender);
+
+        // reward threshold
+        if (reward >= rewardThreshold) {
+            Utils.swapETHForTokens(
+                address(pancakeRouter),
+                address(0x000000000000000000000000000000000000dEaD),
+                reward.div(3)
+            );
+            reward = reward.sub(reward.div(3));
+        }
+
+        // update rewardCycleBlock
+        nextAvailableClaimDate[msg.sender] =
+            block.timestamp +
+            getRewardCycleBlock();
+        emit ClaimBNBSuccessfully(
+            msg.sender,
+            reward,
+            nextAvailableClaimDate[msg.sender]
+        );
+        Utils.swapBNBForWETH(
+            address(pancakeRouter),
+            address(msg.sender),
+            reward
+        );
+
+        // fixed reentrancy bug
+        // (bool sent, ) = address(msg.sender).call{value: reward}("");
+        // require(sent, "Error: Cannot withdraw reward");
     }
 
     function topUpClaimCycleAfterTransfer(address recipient, uint256 amount)
