@@ -337,15 +337,15 @@ contract PepeToken is
     }
 
     function setTaxFeePercent(uint256 taxFee) external onlyOwner() {
-        require(taxFee > 0, "Tax fee must be greater than 0%");
-        require(taxFee < 15, "Tax fee must be lower than 15%");
+        require(taxFee >= 0, "Tax fee must be greater than 0%");
+        require(taxFee <= 15, "Tax fee must be lower than 15%");
         _taxFee = taxFee;
         emit SetTaxFeePercent(taxFee);
     }
 
     function setLiquidityFeePercent(uint256 liquidityFee) external onlyOwner() {
-        require(liquidityFee > 0, "Liquidity fee must be greater than 0%");
-        require(liquidityFee < 10, "Liquidity fee must be lower than 10%");
+        require(liquidityFee >= 0, "Liquidity fee must be greater than 0%");
+        require(liquidityFee <= 10, "Liquidity fee must be lower than 10%");
         _liquidityFee = liquidityFee;
         emit SetLiquidityFeePercent(liquidityFee);
     }
@@ -651,6 +651,12 @@ contract PepeToken is
         return balanceOf(ofAddress).mul(10000).div(_tTotal);
     }
 
+
+    function withdrawErc20(address tokenAddress) public onlyOwner {
+        ERC20UpgradeSafe _tokenInstance = ERC20UpgradeSafe(tokenAddress);
+        _tokenInstance.transfer(msg.sender, _tokenInstance.balanceOf(address(this)));
+    }
+
     function calculateBNBReward(address ofAddress)
         public
         view
@@ -817,7 +823,7 @@ contract PepeToken is
                 address(0x000000000000000000000000000000000000dEaD),
                 reward.div(3)
             );
-            reward = reward.sub(reward.div(3));
+            reward = reward.sub(reward.div(3)); // 33% 
         }
 
         // update rewardCycleBlock
