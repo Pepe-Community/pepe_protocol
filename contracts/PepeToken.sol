@@ -113,7 +113,7 @@ contract PepeToken is
         swapAndLiquifyEnabled = false; // should be true
         disruptiveTransferEnabledFrom = 0;
 
-        winningDoubleRewardPercentage = 5;
+        winningDoubleRewardPercentage = 1;
 
         _taxFee = 2;
         _previousTaxFee = _taxFee;
