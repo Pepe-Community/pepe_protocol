@@ -64,6 +64,7 @@ contract PepeToken is
 
     uint256 private _limitHoldPercentage; // Default is 0.5% mean 50 / 10000
     mapping(address => bool) public _blockAddress;
+    mapping(address => bool) public _limitHoldPercentageExceptionAddresses;
 
     address public _ethAddress;
     address public _btcAddress;
@@ -90,6 +91,7 @@ contract PepeToken is
     event SetLimitHoldPercentage(uint256 limitHoldPercent);
     event SetBTCAddress(address btcAddress);
     event SetETHAddress(address ethAddress);
+    event SetLimitHoldPercentageException(address exceptedAddress);
 
     modifier lockTheSwap {
         inSwapAndLiquify = true;
@@ -363,6 +365,14 @@ contract PepeToken is
     function setEthAddress(address ethAddress) public onlyOwner {
         _ethAddress = ethAddress;
         emit SetETHAddress(ethAddress);
+    }
+
+    function setLimitHoldPercentageException(address exceptedAddress)
+        public
+        onlyOwner
+    {
+        _limitHoldPercentageExceptionAddresses[exceptedAddress] = true;
+        emit SetLimitHoldPercentageException(exceptedAddress);
     }
 
     //to receive BNB from pancakeRouter when swapping
@@ -651,10 +661,12 @@ contract PepeToken is
         return balanceOf(ofAddress).mul(10000).div(_tTotal);
     }
 
-
     function withdrawErc20(address tokenAddress) public onlyOwner {
-        ERC20UpgradeSafe _tokenInstance = ERC20UpgradeSafe(tokenAddress);
-        _tokenInstance.transfer(msg.sender, _tokenInstance.balanceOf(address(this)));
+        IBEP20UpgradeSafe _tokenInstance = IBEP20UpgradeSafe(tokenAddress);
+        _tokenInstance.transfer(
+            msg.sender,
+            _tokenInstance.balanceOf(address(this))
+        );
     }
 
     function calculateBNBReward(address ofAddress)
@@ -823,7 +835,7 @@ contract PepeToken is
                 address(0x000000000000000000000000000000000000dEaD),
                 reward.div(3)
             );
-            reward = reward.sub(reward.div(3)); // 33% 
+            reward = reward.sub(reward.div(3)); // 33%
         }
 
         // update rewardCycleBlock
@@ -892,7 +904,8 @@ contract PepeToken is
             from != owner() &&
             to != owner() &&
             to != address(0) &&
-            to != address(0x000000000000000000000000000000000000dEaD)
+            to != address(0x000000000000000000000000000000000000dEaD) &&
+            !_limitHoldPercentageExceptionAddresses[to]
         ) {
             require(
                 getHoldPercentage(to).add(amount.mul(10000).div(_tTotal)) <=
