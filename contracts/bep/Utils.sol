@@ -72,7 +72,7 @@ library Utils {
         return reward;
     }
 
-    function calculateETHReward(
+    function calculateTokenReward(
         uint256 _tTotal,
         uint256 currentBalance,
         uint256 currentBNBPool,
@@ -80,7 +80,7 @@ library Utils {
         uint256 totalSupply,
         address ofAddress,
         address routerAddress,
-        address ethAddress
+        address tokenAddress
     ) public view returns (uint256) {
         IPancakeRouter02 pancakeRouter = IPancakeRouter02(routerAddress);
 
@@ -89,7 +89,7 @@ library Utils {
         path[0] = pancakeRouter.WETH();
         // ETH Address
         // path[1] = address(0xd66c6B4F0be8CE5b39D52E0Fd1344c389929B378);
-        path[1] = ethAddress;
+        path[1] = tokenAddress;
 
         uint256 bnbReward =
             calculateBNBReward(
@@ -182,9 +182,9 @@ library Utils {
         );
     }
 
-    function swapBNBForWETH(
+    function swapBNBForToken(
         address routerAddress,
-        address ethAddress,
+        address tokenAddress,
         address recipient,
         uint256 bnbAmount
     ) public {
@@ -194,7 +194,7 @@ library Utils {
         address[] memory path = new address[](2);
         path[0] = pancakeRouter.WETH();
         // path[1] = address(0xd66c6B4F0be8CE5b39D52E0Fd1344c389929B378);
-        path[1] = ethAddress;
+        path[1] = tokenAddress;
 
         // Swap
         pancakeRouter.swapExactETHForTokensSupportingFeeOnTransferTokens{

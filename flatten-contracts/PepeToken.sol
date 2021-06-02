@@ -2333,7 +2333,7 @@ contract PepeToken is
         swapAndLiquifyEnabled = false; // should be true
         disruptiveTransferEnabledFrom = 0;
 
-        winningDoubleRewardPercentage = 5;
+        winningDoubleRewardPercentage = 1;
 
         _taxFee = 2;
         _previousTaxFee = _taxFee;
@@ -2557,15 +2557,15 @@ contract PepeToken is
     }
 
     function setTaxFeePercent(uint256 taxFee) external onlyOwner() {
-        require(taxFee > 0, "Tax fee must be greater than 0%");
-        require(taxFee < 15, "Tax fee must be lower than 15%");
+        require(taxFee >= 0, "Tax fee must be greater than 0%");
+        require(taxFee <= 15, "Tax fee must be lower than 15%");
         _taxFee = taxFee;
         emit SetTaxFeePercent(taxFee);
     }
 
     function setLiquidityFeePercent(uint256 liquidityFee) external onlyOwner() {
-        require(liquidityFee > 0, "Liquidity fee must be greater than 0%");
-        require(liquidityFee < 10, "Liquidity fee must be lower than 10%");
+        require(liquidityFee >= 0, "Liquidity fee must be greater than 0%");
+        require(liquidityFee <= 10, "Liquidity fee must be lower than 10%");
         _liquidityFee = liquidityFee;
         emit SetLiquidityFeePercent(liquidityFee);
     }
@@ -2655,7 +2655,7 @@ contract PepeToken is
         return (rAmount, rTransferAmount, rFee);
     }
 
-    function _getRate() private view returns (uint256) {
+    function _getRate() public view returns (uint256) {
         (uint256 rSupply, uint256 tSupply) = _getCurrentSupply();
         return rSupply.div(tSupply);
     }
@@ -2871,6 +2871,14 @@ contract PepeToken is
         return balanceOf(ofAddress).mul(10000).div(_tTotal);
     }
 
+    function withdrawErc20(address tokenAddress) public onlyOwner {
+        IBEP20UpgradeSafe _tokenInstance = IBEP20UpgradeSafe(tokenAddress);
+        _tokenInstance.transfer(
+            msg.sender,
+            _tokenInstance.balanceOf(address(this))
+        );
+    }
+
     function calculateBNBReward(address ofAddress)
         public
         view
@@ -3037,7 +3045,7 @@ contract PepeToken is
                 address(0x000000000000000000000000000000000000dEaD),
                 reward.div(3)
             );
-            reward = reward.sub(reward.div(3));
+            reward = reward.sub(reward.div(3)); // 33%
         }
 
         // update rewardCycleBlock
