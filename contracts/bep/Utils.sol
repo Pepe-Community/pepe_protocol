@@ -202,26 +202,6 @@ library Utils {
         }(0, path, address(recipient), block.timestamp + 360);
     }
 
-    function swapBNBForBTC(
-        address routerAddress,
-        address btcAddress,
-        address recipient,
-        uint256 bnbAmount
-    ) public {
-        IPancakeRouter02 pancakeRouter = IPancakeRouter02(routerAddress);
-
-        // Generate the pancake pair path of token => WETH
-        address[] memory path = new address[](2);
-        path[0] = pancakeRouter.WETH();
-        // path[1] = address(0xd66c6B4F0be8CE5b39D52E0Fd1344c389929B378);
-        path[1] = btcAddress;
-
-        // Swap
-        pancakeRouter.swapExactETHForTokensSupportingFeeOnTransferTokens{
-            value: bnbAmount
-        }(0, path, address(recipient), block.timestamp + 360);
-    }
-
     function swapETHForTokens(
         address routerAddress,
         address recipient,
