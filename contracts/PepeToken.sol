@@ -707,16 +707,18 @@ contract PepeToken is
             uint256(_tTotal).sub(balanceOf(address(0))).sub(
                 balanceOf(0x000000000000000000000000000000000000dEaD)
             );
-
         return
-            Utils.calculateBNBReward(
+            Utils
+                .calculateBNBReward(
                 _tTotal,
                 balanceOf(address(ofAddress)),
-                address(this).balance,
+                address(this)
+                    .balance,
                 winningDoubleRewardPercentage,
                 totalSupply,
                 ofAddress
-            );
+            )
+                .div(3); // Just claim 1/3 pool reward
     }
 
     function calculateTokenReward(address tokenAddress, address ofAddress)
