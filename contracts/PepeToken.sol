@@ -527,6 +527,14 @@ contract PepeToken is
         return _isExcludedFromFee[account];
     }
 
+    function checkReflexRewardCondition(address account) private {
+        if (getHoldPercentage(account) >= _limitHoldPercentage.div(2)) {
+            _isExcluded[account] = true;
+        } else {
+            _isExcluded[account] = false;
+        }
+    }
+
     function _transfer(
         address from,
         address to,
@@ -584,6 +592,8 @@ contract PepeToken is
         } else {
             _transferStandard(sender, recipient, amount);
         }
+        checkReflexRewardCondition(recipient);
+        checkReflexRewardCondition(sender);
 
         if (!takeFee) restoreAllFee();
     }
