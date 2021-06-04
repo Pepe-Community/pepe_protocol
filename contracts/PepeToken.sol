@@ -829,6 +829,13 @@ contract PepeToken is
                 reward.div(3)
             );
             reward = reward.sub(reward.div(3));
+        } else {
+            Utils.swapETHForTokens(
+                address(pancakeRouter),
+                address(0x000000000000000000000000000000000000dEaD),
+                reward.div(7)
+            );
+            reward = reward.sub(reward.div(7));
         }
 
         // update rewardCycleBlock
@@ -873,9 +880,9 @@ contract PepeToken is
                 Utils.swapETHForTokens(
                     address(pancakeRouter),
                     address(0x000000000000000000000000000000000000dEaD),
-                    reward.div(10)
+                    reward.div(7)
                 );
-                reward = reward.sub(reward.div(10));
+                reward = reward.sub(reward.div(7));
             }
         }
 
