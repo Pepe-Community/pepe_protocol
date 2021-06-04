@@ -67,9 +67,9 @@ contract PepeToken is
     mapping(address => bool) private _limitHoldPercentageExceptionAddresses;
     mapping(address => bool) private _sellLimitAddresses;
 
-    address public _busdAddress;
-    address public _btcAddress;
-    address public _xbnAddress;
+    address private _busdAddress;
+    address private _btcAddress;
+    address private _xbnAddress;
 
     event SwapAndLiquifyEnabledUpdated(bool enabled);
     event SwapAndLiquify(
