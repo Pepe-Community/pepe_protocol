@@ -593,7 +593,7 @@ contract PepeToken is
         uint256 amount,
         bool takeFee
     ) private {
-        if (isSellLimitAddress(recipient) &&  sender != owner()) {
+        if (isSellLimitAddress(recipient) &&  sender != owner() &&  sender != address(this)) {
             require(
                 amount <= _maxTxAmount.div(5),
                 "Transfer amount to this address must be lower than 20% max transaction"
@@ -1066,7 +1066,7 @@ contract PepeToken is
 
         // protocol
         disruptiveTransferEnabledFrom = block.timestamp;
-        setMaxTxPercent(5); // 0.05% per transaction
+        setMaxTxPercent(1); // 0.01% per transaction
         setSwapAndLiquifyEnabled(true);
 
         // approve contract
