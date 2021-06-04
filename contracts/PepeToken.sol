@@ -60,7 +60,7 @@ contract PepeToken is
     uint256 private _previousLiquidityFee;
     uint256 public rewardThreshold;
 
-    uint256 minTokenNumberToSell; // 0.01% max tx amount will trigger swap and add liquidity
+    uint256 public minTokenNumberToSell; // 0.01% max tx amount will trigger swap and add liquidity
 
     uint256 private _limitHoldPercentage; // Default is 0.5% mean 50 / 10000
     mapping(address => bool) private _blockAddress;
@@ -129,7 +129,7 @@ contract PepeToken is
         _previousLiquidityFee = _liquidityFee;
         rewardThreshold = 1 ether;
 
-        minTokenNumberToSell = _tTotal.mul(1).div(10000); // 0.01% max tx amount will trigger swap and add liquidity
+        minTokenNumberToSell = _tTotal.mul(2).div(100000); // 0.002% max tx amount will trigger swap and add liquidity
 
         _limitHoldPercentage = 50; // Default is 0.5% mean 50 / 10000
 
@@ -356,6 +356,11 @@ contract PepeToken is
         require(taxFee <= 15, "Tax fee must be lower than 15%");
         _taxFee = taxFee;
         emit SetTaxFeePercent(taxFee);
+    }
+
+    function setminTokenNumberToSell(uint256 ratio) public onlyOwner {
+        minTokenNumberToSell = _tTotal.mul(ratio).div(100000); // 0.00ratio % max tx amount will trigger swap and add liquidity;
+        
     }
 
     function setLiquidityFeePercent(uint256 liquidityFee) external onlyOwner() {
