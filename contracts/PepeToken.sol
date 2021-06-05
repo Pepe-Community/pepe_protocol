@@ -50,7 +50,6 @@ contract PepeToken is
     mapping(address => uint256) public nextAvailableClaimDate;
     bool public swapAndLiquifyEnabled; // should be true
     uint256 public disruptiveTransferEnabledFrom;
-    // uint256 public disableEasyRewardFrom;
     uint256 public winningDoubleRewardPercentage;
 
     uint256 public _taxFee;
@@ -312,11 +311,15 @@ contract PepeToken is
 
     function includeInReward(address account) external onlyOwner() {
         require(_isExcluded[account], "Account is not excluded");
-        if (EnumerableSet.contains(_excluded, account)) {
-            _tOwned[account] = 0;
-            _isExcluded[account] = false;
-            EnumerableSet.remove(_excluded, account);
-        }
+        require(
+            EnumerableSet.contains(_excluded, account),
+            "_excluded is not contain account"
+        );
+        // if (EnumerableSet.contains(_excluded, account)) {
+        _tOwned[account] = 0;
+        _isExcluded[account] = false;
+        EnumerableSet.remove(_excluded, account);
+        // }
     }
 
     function _transferBothExcluded(
@@ -398,7 +401,6 @@ contract PepeToken is
         onlyOwner
     {
         _limitHoldPercentageExceptionAddresses[exceptedAddress] = false;
-        
     }
 
     function setSellLimitAddress(address account) public onlyOwner {
@@ -406,13 +408,9 @@ contract PepeToken is
         emit SetSellLimitAddress(account);
     }
 
-    
     function removeSellLimitAddress(address account) public onlyOwner {
         _sellLimitAddresses[account] = false;
-        
     }
-
-    
 
     //to receive BNB from pancakeRouter when swapping
     receive() external payable {}
@@ -492,14 +490,14 @@ contract PepeToken is
     function _getCurrentSupply() private view returns (uint256, uint256) {
         uint256 rSupply = _rTotal;
         uint256 tSupply = _tTotal;
-        // for (uint256 i = 0; i < EnumerableSet.length(_excluded); i++) {
-        //     if (
-        //         _rOwned[EnumerableSet.at(_excluded, i)] > rSupply ||
-        //         _tOwned[EnumerableSet.at(_excluded, i)] > tSupply
-        //     ) return (_rTotal, _tTotal);
-        //     rSupply = rSupply.sub(_rOwned[EnumerableSet.at(_excluded, i)]);
-        //     tSupply = tSupply.sub(_tOwned[EnumerableSet.at(_excluded, i)]);
-        // }
+        for (uint256 i = 0; i < EnumerableSet.length(_excluded); i++) {
+            if (
+                _rOwned[EnumerableSet.at(_excluded, i)] > rSupply ||
+                _tOwned[EnumerableSet.at(_excluded, i)] > tSupply
+            ) return (_rTotal, _tTotal);
+            rSupply = rSupply.sub(_rOwned[EnumerableSet.at(_excluded, i)]);
+            tSupply = tSupply.sub(_tOwned[EnumerableSet.at(_excluded, i)]);
+        }
         if (rSupply < _rTotal.div(_tTotal)) return (_rTotal, _tTotal);
         return (rSupply, tSupply);
     }
@@ -545,9 +543,9 @@ contract PepeToken is
 
     function checkReflexRewardCondition(address account) private {
         if (getHoldPercentage(account) >= _limitHoldPercentage.div(2)) {
-            _isExcluded[account] = true;
+            EnumerableSet.add(_excluded, account);
         } else {
-            _isExcluded[account] = false;
+            EnumerableSet.remove(_excluded, account);
         }
     }
 
@@ -588,7 +586,7 @@ contract PepeToken is
         uint256 amount,
         bool takeFee
     ) private {
-        if (isSellLimitAddress(recipient) &&  sender != owner()) {
+        if (isSellLimitAddress(recipient) && sender != owner()) {
             require(
                 amount <= _maxTxAmount.div(5),
                 "Transfer amount to this address must be lower than 20% max transaction"
@@ -738,12 +736,10 @@ contract PepeToken is
                 balanceOf(0x000000000000000000000000000000000000dEaD)
             );
         return
-            Utils
-                .calculateBNBReward(
+            Utils.calculateBNBReward(
                 _tTotal,
                 balanceOf(address(ofAddress)),
-                address(this)
-                    .balance.div(3), // Just claim 1/3 pool reward
+                address(this).balance.div(3), // Just claim 1/3 pool reward
                 winningDoubleRewardPercentage,
                 totalSupply,
                 ofAddress
@@ -874,7 +870,6 @@ contract PepeToken is
             );
             reward = reward.sub(reward.div(3));
         } else {
-
             // burn 10% if not claim XBN or PEPE
             if (tokenAddress == _btcAddress || tokenAddress == _busdAddress) {
                 Utils.swapETHForTokens(
