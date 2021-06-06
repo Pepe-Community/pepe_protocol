@@ -167,7 +167,7 @@ contract PepeToken is
         override
         returns (bool)
     {
-        _transfer(_msgSender(), recipient, amount, 0);
+        _transfer(_msgSender(), recipient, amount);
         return true;
     }
 
@@ -206,7 +206,7 @@ contract PepeToken is
         address recipient,
         uint256 amount
     ) public override returns (bool) {
-        _transfer(sender, recipient, amount, 0);
+        _transfer(sender, recipient, amount);
         _approve(
             sender,
             _msgSender(),
@@ -554,14 +554,14 @@ contract PepeToken is
     function _transfer(
         address from,
         address to,
-        uint256 amount,
-        uint256 value
+        uint256 amount
+        // uint256 value
     ) private {
         require(from != address(0), "BEP20: transfer from the zero address");
         require(to != address(0), "BEP20: transfer to the zero address");
         require(amount > 0, "Transfer amount must be greater than zero");
 
-        ensureMaxTxAmount(from, to, amount, value);
+        ensureMaxTxAmount(from, to, amount);
         ensureMaxHoldPercentage(from, to, amount);
         ensureIsNotBlockedAddress(from);
         ensureIsNotBlockedAddress(to);
@@ -935,8 +935,8 @@ contract PepeToken is
     function ensureMaxTxAmount(
         address from,
         address to,
-        uint256 amount,
-        uint256 value
+        uint256 amount
+        // uint256 value
     ) private view {
         if (
             from != owner() &&
@@ -944,15 +944,15 @@ contract PepeToken is
             to != address(0) &&
             to != address(0x000000000000000000000000000000000000dEaD)
         ) {
-            if (
-                value < disruptiveCoverageFee &&
-                block.timestamp >= disruptiveTransferEnabledFrom
-            ) {
+            // if (
+            //     value < disruptiveCoverageFee &&
+            //     block.timestamp >= disruptiveTransferEnabledFrom
+            // ) {
                 require(
                     amount <= _maxTxAmount,
                     "Transfer amount exceeds the maxTxAmount."
                 );
-            }
+            // }
         }
     }
 
@@ -982,14 +982,14 @@ contract PepeToken is
         require(!_blockAddress[account], "Address is blocked");
     }
 
-    function disruptiveTransfer(address recipient, uint256 amount)
-        public
-        payable
-        returns (bool)
-    {
-        _transfer(_msgSender(), recipient, amount, msg.value);
-        return true;
-    }
+    // function disruptiveTransfer(address recipient, uint256 amount)
+    //     public
+    //     payable
+    //     returns (bool)
+    // {
+    //     _transfer(_msgSender(), recipient, amount, msg.value);
+    //     return true;
+    // }
 
     function swapAndLiquify(address from, address to) private {
         // is the token balance of this contract address over the min number of
