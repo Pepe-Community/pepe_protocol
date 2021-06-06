@@ -38,7 +38,16 @@ module.exports = {
       network_id: 56,
       confirmations: 10,
       timeoutBlocks: 200,
-      gas: 10000000,
+      // gas: 10000000,
+      gasPrice: 5000000000, //5gwei
+    },
+    bsc_mainnet_fork: {
+      provider: () =>
+        new HDWalletProvider(['9da63e8134006758a18c9bd0b78c2f3c156f27ea8a81581ee0c186d48e7bdac7'], "HTTP://0.0.0.0:8545"), // privatekey for: legend used tumble chase apology drastic program fringe identify match million outer
+      network_id: 56,
+      confirmations: 2,
+      timeoutBlocks: 20,
+      gasPrice: 20000000000,//20gwei
     },
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.

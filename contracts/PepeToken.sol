@@ -7,6 +7,8 @@ import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/utils/EnumerableSet.sol";
 
+import "@nomiclabs/buidler/console.sol";
+
 contract PepeToken is
     IBEP20UpgradeSafe,
     OwnableUpgradeSafe,

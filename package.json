@@ -7,12 +7,14 @@
     "test": "test"
   },
   "scripts": {
+    "forkchain": "ganache-cli --fork  https://bsc-dataseed1.binance.org -s legend used tumble chase apology drastic program fringe identify match million outer", 
     "test": "./scripts/test.sh",
     "compile": "npx truffle compile --all",
     "flatten": "./scripts/flatten-contract.sh",
     "clean": "rm -rf  ./build",
     "predeploy-contract": "yarn clean",
     "deploy-contract": "npx truffle migrate -f 2 --to 2 --network bsc_testnet",
+    "deploy-contract:debug": "PANCAKE_ROUTER=0x10ED43C718714eb63d5aA57B78B54704E256024E npx truffle migrate -f 2 --to 2 --network bsc_mainnet_fork --verbose-rpc --describe-json",
     "deploy-contract:mainnet": "npx truffle migrate -f 2 --to 2 --network bsc",
     "preupgrade-contract": "yarn clean",
     "upgrade-contract": "npx truffle migrate -f 3 --to 3 --network bsc_testnet",
@@ -36,6 +38,7 @@
     "truffle-contract-size": "^2.0.1"
   },
   "devDependencies": {
+    "@nomiclabs/buidler": "^1.4.8",
     "@openzeppelin/truffle-upgrades": "^1.7.0",
     "chai": "^4.3.4"
   }
