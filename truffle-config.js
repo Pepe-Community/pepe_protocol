@@ -22,7 +22,7 @@ module.exports = {
           "https://data-seed-prebsc-1-s2.binance.org:8545"
         ),
       network_id: 97,
-      confirmations: 10,
+      confirmations: 3,
       timeoutBlocks: 200,
       // gas: 5000000,
       gasPrice: 10e9,

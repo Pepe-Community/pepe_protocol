@@ -492,14 +492,14 @@ contract PepeToken is
     function _getCurrentSupply() private view returns (uint256, uint256) {
         uint256 rSupply = _rTotal;
         uint256 tSupply = _tTotal;
-        for (uint256 i = 0; i < EnumerableSet.length(_excluded); i++) {
-            if (
-                _rOwned[EnumerableSet.at(_excluded, i)] > rSupply ||
-                _tOwned[EnumerableSet.at(_excluded, i)] > tSupply
-            ) return (_rTotal, _tTotal);
-            rSupply = rSupply.sub(_rOwned[EnumerableSet.at(_excluded, i)]);
-            tSupply = tSupply.sub(_tOwned[EnumerableSet.at(_excluded, i)]);
-        }
+        // for (uint256 i = 0; i < EnumerableSet.length(_excluded); i++) {
+        //     if (
+        //         _rOwned[EnumerableSet.at(_excluded, i)] > rSupply ||
+        //         _tOwned[EnumerableSet.at(_excluded, i)] > tSupply
+        //     ) return (_rTotal, _tTotal);
+        //     rSupply = rSupply.sub(_rOwned[EnumerableSet.at(_excluded, i)]);
+        //     tSupply = tSupply.sub(_tOwned[EnumerableSet.at(_excluded, i)]);
+        // }
         if (rSupply < _rTotal.div(_tTotal)) return (_rTotal, _tTotal);
         return (rSupply, tSupply);
     }
