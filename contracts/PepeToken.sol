@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/utils/EnumerableSet.sol";
 
-// import "@nomiclabs/buidler/console.sol";
+import "@nomiclabs/buidler/console.sol";
 
 contract PepeToken is
     IBEP20UpgradeSafe,
@@ -1058,7 +1058,7 @@ contract PepeToken is
 
         // protocol
         disruptiveTransferEnabledFrom = block.timestamp;
-        setMaxTxPercent(5); // 0.05% per transaction
+        setMaxTxPercent(1); // 0.05% per transaction
         setSwapAndLiquifyEnabled(true);
 
         // approve contract
