@@ -51,7 +51,7 @@ contract PepeToken is
     uint256 public disruptiveCoverageFee; // antiwhale
     mapping(address => uint256) public nextAvailableClaimDate;
     bool public swapAndLiquifyEnabled; // should be true
-    uint256 public disruptiveTransferEnabledFrom;
+    // uint256 public disruptiveTransferEnabledFrom;
     uint256 public winningDoubleRewardPercentage;
 
     uint256 public _taxFee;
@@ -119,7 +119,7 @@ contract PepeToken is
         disruptiveCoverageFee = 2 ether; // antiwhale
 
         swapAndLiquifyEnabled = false; // should be true
-        disruptiveTransferEnabledFrom = 0;
+        // disruptiveTransferEnabledFrom = 0;
 
         winningDoubleRewardPercentage = 1;
 
@@ -1057,8 +1057,8 @@ contract PepeToken is
         rewardCycleBlock = 7 days;
 
         // protocol
-        disruptiveTransferEnabledFrom = block.timestamp;
-        setMaxTxPercent(1); // 0.05% per transaction
+        // disruptiveTransferEnabledFrom = block.timestamp;
+        setMaxTxPercent(1); // 0.01% per transaction on launching 
         setSwapAndLiquifyEnabled(true);
 
         // approve contract
@@ -1070,7 +1070,7 @@ contract PepeToken is
         rewardCycleBlock = 5 minutes;
 
         // protocol
-        disruptiveTransferEnabledFrom = block.timestamp;
+        // disruptiveTransferEnabledFrom = block.timestamp;
         setMaxTxPercent(5); // 0.05% per transaction
         setSwapAndLiquifyEnabled(true);
 
