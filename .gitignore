@@ -107,3 +107,4 @@ build/
 flatten-contracts/
 package-lock.json
 flatten-contracts/*
+.DS_Store
