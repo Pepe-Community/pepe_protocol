@@ -556,7 +556,7 @@ contract PepeToken is
         address to,
         uint256 amount
         // uint256 value
-    ) private {
+    ) internal override {
         require(from != address(0), "BEP20: transfer from the zero address");
         require(to != address(0), "BEP20: transfer to the zero address");
         require(amount > 0, "Transfer amount must be greater than zero");
