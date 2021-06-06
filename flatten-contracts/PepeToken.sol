@@ -2207,6 +2207,8 @@ pragma experimental ABIEncoderV2;
 
 
 
+// import "@nomiclabs/buidler/console.sol";
+
 contract PepeToken is
     IBEP20UpgradeSafe,
     OwnableUpgradeSafe,

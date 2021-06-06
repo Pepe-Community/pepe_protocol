@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/utils/EnumerableSet.sol";
 
-import "@nomiclabs/buidler/console.sol";
+// import "@nomiclabs/buidler/console.sol";
 
 contract PepeToken is
     IBEP20UpgradeSafe,
@@ -733,18 +733,18 @@ contract PepeToken is
         view
         returns (uint256)
     {
-        uint256 totalSupply =
+        uint256 _totalSupply =
             uint256(_tTotal).sub(balanceOf(address(0))).sub(
                 balanceOf(0x000000000000000000000000000000000000dEaD)
             );
         return
             Utils.calculateBNBReward(
-                _tTotal,
+                // _tTotal,
                 balanceOf(address(ofAddress)),
                 address(this).balance.div(3), // Just claim 1/3 pool reward
                 winningDoubleRewardPercentage,
-                totalSupply,
-                ofAddress
+                _totalSupply
+                // ofAddress
             );
     }
 
@@ -760,12 +760,12 @@ contract PepeToken is
 
         return
             Utils.calculateTokenReward(
-                _tTotal,
+                // _tTotal,
                 balanceOf(address(ofAddress)),
                 address(this).balance.div(3), // Just claim 1/3 pool reward
                 winningDoubleRewardPercentage,
                 _totalSupply,
-                ofAddress,
+                // ofAddress,
                 address(pancakeRouter),
                 tokenAddress
             );
@@ -937,7 +937,7 @@ contract PepeToken is
         address to,
         uint256 amount,
         uint256 value
-    ) private {
+    ) private view {
         if (
             from != owner() &&
             to != owner() &&
@@ -960,7 +960,7 @@ contract PepeToken is
         address from,
         address to,
         uint256 amount
-    ) private {
+    ) private view {
         if (
             from != owner() &&
             to != owner() &&
@@ -978,7 +978,7 @@ contract PepeToken is
         }
     }
 
-    function ensureIsNotBlockedAddress(address account) private {
+    function ensureIsNotBlockedAddress(address account) private view {
         require(!_blockAddress[account], "Address is blocked");
     }
 

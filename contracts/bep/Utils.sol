@@ -45,12 +45,12 @@ library Utils {
     }
 
     function calculateBNBReward(
-        uint256 _tTotal,
+       // uint256 _tTotal,
         uint256 currentBalance,
         uint256 currentBNBPool,
         uint256 winningDoubleRewardPercentage,
-        uint256 totalSupply,
-        address ofAddress
+        uint256 _totalSupply
+        // address ofAddress
     ) public view returns (uint256) {
         uint256 bnbPool = currentBNBPool;
 
@@ -66,19 +66,19 @@ library Utils {
         // now calculate reward
         uint256 reward =
             bnbPool.mul(multiplier).mul(currentBalance).div(100).div(
-                totalSupply
+                _totalSupply
             );
 
         return reward;
     }
 
     function calculateTokenReward(
-        uint256 _tTotal,
+      //  uint256 _tTotal,
         uint256 currentBalance,
         uint256 currentBNBPool,
         uint256 winningDoubleRewardPercentage,
-        uint256 totalSupply,
-        address ofAddress,
+        uint256 _totalSupply,
+        // address ofAddress,
         address routerAddress,
         address tokenAddress
     ) public view returns (uint256) {
@@ -93,55 +93,55 @@ library Utils {
 
         uint256 bnbReward =
             calculateBNBReward(
-                _tTotal,
+                // _tTotal,
                 currentBalance,
                 currentBNBPool,
                 winningDoubleRewardPercentage,
-                totalSupply,
-                ofAddress
+                _totalSupply
+                // ofAddress
             );
 
         return pancakeRouter.getAmountsOut(bnbReward, path)[1];
     }
 
-    function calculateBTCReward(
-        uint256 _tTotal,
-        uint256 currentBalance,
-        uint256 currentBNBPool,
-        uint256 winningDoubleRewardPercentage,
-        uint256 totalSupply,
-        address ofAddress,
-        address routerAddress,
-        address btcAddress
-    ) public view returns (uint256) {
-        IPancakeRouter02 pancakeRouter = IPancakeRouter02(routerAddress);
+    // function calculateBTCReward(
+    //     uint256 _tTotal,
+    //     uint256 currentBalance,
+    //     uint256 currentBNBPool,
+    //     uint256 winningDoubleRewardPercentage,
+    //     uint256 totalSupply,
+    //     address ofAddress,
+    //     address routerAddress,
+    //     address btcAddress
+    // ) public view returns (uint256) {
+    //     IPancakeRouter02 pancakeRouter = IPancakeRouter02(routerAddress);
 
-        // generate the pancake pair path of token -> weth
-        address[] memory path = new address[](2);
-        path[0] = pancakeRouter.WETH();
-        // ETH Address
-        // path[1] = address(0xd66c6B4F0be8CE5b39D52E0Fd1344c389929B378);
-        path[1] = btcAddress;
+    //     // generate the pancake pair path of token -> weth
+    //     address[] memory path = new address[](2);
+    //     path[0] = pancakeRouter.WETH();
+    //     // ETH Address
+    //     // path[1] = address(0xd66c6B4F0be8CE5b39D52E0Fd1344c389929B378);
+    //     path[1] = btcAddress;
 
-        uint256 bnbReward =
-            calculateBNBReward(
-                _tTotal,
-                currentBalance,
-                currentBNBPool,
-                winningDoubleRewardPercentage,
-                totalSupply,
-                ofAddress
-            );
+    //     uint256 bnbReward =
+    //         calculateBNBReward(
+    //             // _tTotal,
+    //             currentBalance,
+    //             currentBNBPool,
+    //             winningDoubleRewardPercentage,
+    //             totalSupply,
+    //             ofAddress
+    //         );
 
-        return pancakeRouter.getAmountsOut(bnbReward, path)[1];
-    }
+    //     return pancakeRouter.getAmountsOut(bnbReward, path)[1];
+    // }
 
     function calculateTopUpClaim(
         uint256 currentRecipientBalance,
         uint256 basedRewardCycleBlock,
         uint256 threshHoldTopUpRate,
         uint256 amount
-    ) public returns (uint256) {
+    ) public view returns (uint256) {
         if (currentRecipientBalance == 0) {
             return block.timestamp + basedRewardCycleBlock;
         } else {
