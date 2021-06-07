@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/utils/EnumerableSet.sol";
 
-import "@nomiclabs/buidler/console.sol";
+// import "@nomiclabs/buidler/console.sol";
 
 contract PepeToken is
     IBEP20UpgradeSafe,
@@ -109,6 +109,7 @@ contract PepeToken is
         IBEP20UpgradeSafe.__ERC20_init("PEPE Community Coin", "PEPE");
         IBEP20UpgradeSafe._setupDecimals(uint8(DECIMALS));
         OwnableUpgradeSafe.__Ownable_init();
+        ReentrancyGuardUpgradeSafe.__ReentrancyGuard_init();
 
         _tTotal = 1000000000 * 10**6 * 10**9;
         _rTotal = (MAX - (MAX % _tTotal));
@@ -308,7 +309,6 @@ contract PepeToken is
         }
         _isExcluded[account] = true;
         EnumerableSet.add(_excluded, account);
-        // _excluded.push(account);
     }
 
     function includeInReward(address account) external onlyOwner() {
@@ -317,11 +317,11 @@ contract PepeToken is
             EnumerableSet.contains(_excluded, account),
             "_excluded is not contain account"
         );
-        // if (EnumerableSet.contains(_excluded, account)) {
-        _tOwned[account] = 0;
-        _isExcluded[account] = false;
-        EnumerableSet.remove(_excluded, account);
-        // }
+        if (EnumerableSet.contains(_excluded, account)) {
+            _tOwned[account] = 0;
+            _isExcluded[account] = false;
+            EnumerableSet.remove(_excluded, account);
+        }
     }
 
     function _transferBothExcluded(
@@ -496,11 +496,15 @@ contract PepeToken is
         //     if (
         //         _rOwned[EnumerableSet.at(_excluded, i)] > rSupply ||
         //         _tOwned[EnumerableSet.at(_excluded, i)] > tSupply
-        //     ) return (_rTotal, _tTotal);
+        //     ) {
+        //         return (_rTotal, _tTotal);
+        //     }
         //     rSupply = rSupply.sub(_rOwned[EnumerableSet.at(_excluded, i)]);
         //     tSupply = tSupply.sub(_tOwned[EnumerableSet.at(_excluded, i)]);
         // }
-        if (rSupply < _rTotal.div(_tTotal)) return (_rTotal, _tTotal);
+        if (rSupply < _rTotal.div(_tTotal)) {
+            return (_rTotal, _tTotal);
+        }
         return (rSupply, tSupply);
     }
 
@@ -554,8 +558,7 @@ contract PepeToken is
     function _transfer(
         address from,
         address to,
-        uint256 amount
-        // uint256 value
+        uint256 amount // uint256 value
     ) internal override {
         require(from != address(0), "BEP20: transfer from the zero address");
         require(to != address(0), "BEP20: transfer to the zero address");
@@ -935,8 +938,7 @@ contract PepeToken is
     function ensureMaxTxAmount(
         address from,
         address to,
-        uint256 amount
-        // uint256 value
+        uint256 amount // uint256 value
     ) private view {
         if (
             from != owner() &&
@@ -948,10 +950,10 @@ contract PepeToken is
             //     value < disruptiveCoverageFee &&
             //     block.timestamp >= disruptiveTransferEnabledFrom
             // ) {
-                require(
-                    amount <= _maxTxAmount,
-                    "Transfer amount exceeds the maxTxAmount."
-                );
+            require(
+                amount <= _maxTxAmount,
+                "Transfer amount exceeds the maxTxAmount."
+            );
             // }
         }
     }
@@ -1058,7 +1060,7 @@ contract PepeToken is
 
         // protocol
         // disruptiveTransferEnabledFrom = block.timestamp;
-        setMaxTxPercent(1); // 0.01% per transaction on launching 
+        setMaxTxPercent(1); // 0.01% per transaction on launching
         setSwapAndLiquifyEnabled(true);
 
         // approve contract
