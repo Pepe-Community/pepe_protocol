@@ -7,6 +7,8 @@ import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/utils/EnumerableSet.sol";
 
+import "@nomiclabs/buidler/console.sol";
+
 contract PepeToken is
     IBEP20UpgradeSafe,
     OwnableUpgradeSafe,
@@ -49,8 +51,7 @@ contract PepeToken is
     uint256 public disruptiveCoverageFee; // antiwhale
     mapping(address => uint256) public nextAvailableClaimDate;
     bool public swapAndLiquifyEnabled; // should be true
-    uint256 public disruptiveTransferEnabledFrom;
-    // uint256 public disableEasyRewardFrom;
+    // uint256 public disruptiveTransferEnabledFrom;
     uint256 public winningDoubleRewardPercentage;
 
     uint256 public _taxFee;
@@ -67,9 +68,9 @@ contract PepeToken is
     mapping(address => bool) private _limitHoldPercentageExceptionAddresses;
     mapping(address => bool) private _sellLimitAddresses;
 
-    address public _busdAddress;
-    address public _btcAddress;
-    address public _xbnAddress;
+    address private _busdAddress;
+    address private _btcAddress;
+    address private _xbnAddress;
 
     event SwapAndLiquifyEnabledUpdated(bool enabled);
     event SwapAndLiquify(
@@ -118,7 +119,7 @@ contract PepeToken is
         disruptiveCoverageFee = 2 ether; // antiwhale
 
         swapAndLiquifyEnabled = false; // should be true
-        disruptiveTransferEnabledFrom = 0;
+        // disruptiveTransferEnabledFrom = 0;
 
         winningDoubleRewardPercentage = 1;
 
@@ -166,7 +167,7 @@ contract PepeToken is
         override
         returns (bool)
     {
-        _transfer(_msgSender(), recipient, amount, 0);
+        _transfer(_msgSender(), recipient, amount);
         return true;
     }
 
@@ -205,7 +206,7 @@ contract PepeToken is
         address recipient,
         uint256 amount
     ) public override returns (bool) {
-        _transfer(sender, recipient, amount, 0);
+        _transfer(sender, recipient, amount);
         _approve(
             sender,
             _msgSender(),
@@ -312,11 +313,15 @@ contract PepeToken is
 
     function includeInReward(address account) external onlyOwner() {
         require(_isExcluded[account], "Account is not excluded");
-        if (EnumerableSet.contains(_excluded, account)) {
-            _tOwned[account] = 0;
-            _isExcluded[account] = false;
-            EnumerableSet.remove(_excluded, account);
-        }
+        require(
+            EnumerableSet.contains(_excluded, account),
+            "_excluded is not contain account"
+        );
+        // if (EnumerableSet.contains(_excluded, account)) {
+        _tOwned[account] = 0;
+        _isExcluded[account] = false;
+        EnumerableSet.remove(_excluded, account);
+        // }
     }
 
     function _transferBothExcluded(
@@ -403,7 +408,6 @@ contract PepeToken is
         onlyOwner
     {
         _limitHoldPercentageExceptionAddresses[exceptedAddress] = false;
-        
     }
 
     function setSellLimitAddress(address account) public onlyOwner {
@@ -411,13 +415,9 @@ contract PepeToken is
         emit SetSellLimitAddress(account);
     }
 
-    
     function removeSellLimitAddress(address account) public onlyOwner {
         _sellLimitAddresses[account] = false;
-        
     }
-
-    
 
     //to receive BNB from pancakeRouter when swapping
     receive() external payable {}
@@ -550,23 +550,23 @@ contract PepeToken is
 
     function checkReflexRewardCondition(address account) private {
         if (getHoldPercentage(account) >= _limitHoldPercentage.div(2)) {
-            _isExcluded[account] = true;
+            EnumerableSet.add(_excluded, account);
         } else {
-            _isExcluded[account] = false;
+            EnumerableSet.remove(_excluded, account);
         }
     }
 
     function _transfer(
         address from,
         address to,
-        uint256 amount,
-        uint256 value
-    ) private {
+        uint256 amount
+        // uint256 value
+    ) internal override {
         require(from != address(0), "BEP20: transfer from the zero address");
         require(to != address(0), "BEP20: transfer to the zero address");
         require(amount > 0, "Transfer amount must be greater than zero");
 
-        ensureMaxTxAmount(from, to, amount, value);
+        ensureMaxTxAmount(from, to, amount);
         ensureMaxHoldPercentage(from, to, amount);
         ensureIsNotBlockedAddress(from);
         ensureIsNotBlockedAddress(to);
@@ -593,7 +593,9 @@ contract PepeToken is
         uint256 amount,
         bool takeFee
     ) private {
+
         if (isSellLimitAddress(recipient) &&  sender != owner() &&  sender != address(this)) {
+
             require(
                 amount <= _maxTxAmount.div(5),
                 "Transfer amount to this address must be lower than 20% max transaction"
@@ -738,20 +740,18 @@ contract PepeToken is
         view
         returns (uint256)
     {
-        uint256 totalSupply =
+        uint256 _totalSupply =
             uint256(_tTotal).sub(balanceOf(address(0))).sub(
                 balanceOf(0x000000000000000000000000000000000000dEaD)
             );
         return
-            Utils
-                .calculateBNBReward(
-                _tTotal,
+            Utils.calculateBNBReward(
+                // _tTotal,
                 balanceOf(address(ofAddress)),
-                address(this)
-                    .balance.div(3), // Just claim 1/3 pool reward
+                address(this).balance.div(3), // Just claim 1/3 pool reward
                 winningDoubleRewardPercentage,
-                totalSupply,
-                ofAddress
+                _totalSupply
+                // ofAddress
             );
     }
 
@@ -767,12 +767,12 @@ contract PepeToken is
 
         return
             Utils.calculateTokenReward(
-                _tTotal,
+                // _tTotal,
                 balanceOf(address(ofAddress)),
                 address(this).balance.div(3), // Just claim 1/3 pool reward
                 winningDoubleRewardPercentage,
                 _totalSupply,
-                ofAddress,
+                // ofAddress,
                 address(pancakeRouter),
                 tokenAddress
             );
@@ -879,7 +879,6 @@ contract PepeToken is
             );
             reward = reward.sub(reward.div(3));
         } else {
-
             // burn 10% if not claim XBN or PEPE
             if (tokenAddress == _btcAddress || tokenAddress == _busdAddress) {
                 Utils.swapETHForTokens(
@@ -943,24 +942,24 @@ contract PepeToken is
     function ensureMaxTxAmount(
         address from,
         address to,
-        uint256 amount,
-        uint256 value
-    ) private {
+        uint256 amount
+        // uint256 value
+    ) private view {
         if (
             from != owner() &&
             to != owner() &&
             to != address(0) &&
             to != address(0x000000000000000000000000000000000000dEaD)
         ) {
-            if (
-                value < disruptiveCoverageFee &&
-                block.timestamp >= disruptiveTransferEnabledFrom
-            ) {
+            // if (
+            //     value < disruptiveCoverageFee &&
+            //     block.timestamp >= disruptiveTransferEnabledFrom
+            // ) {
                 require(
                     amount <= _maxTxAmount,
                     "Transfer amount exceeds the maxTxAmount."
                 );
-            }
+            // }
         }
     }
 
@@ -968,7 +967,7 @@ contract PepeToken is
         address from,
         address to,
         uint256 amount
-    ) private {
+    ) private view {
         if (
             from != owner() &&
             to != owner() &&
@@ -986,18 +985,18 @@ contract PepeToken is
         }
     }
 
-    function ensureIsNotBlockedAddress(address account) private {
+    function ensureIsNotBlockedAddress(address account) private view {
         require(!_blockAddress[account], "Address is blocked");
     }
 
-    function disruptiveTransfer(address recipient, uint256 amount)
-        public
-        payable
-        returns (bool)
-    {
-        _transfer(_msgSender(), recipient, amount, msg.value);
-        return true;
-    }
+    // function disruptiveTransfer(address recipient, uint256 amount)
+    //     public
+    //     payable
+    //     returns (bool)
+    // {
+    //     _transfer(_msgSender(), recipient, amount, msg.value);
+    //     return true;
+    // }
 
     function swapAndLiquify(address from, address to) private {
         // is the token balance of this contract address over the min number of
@@ -1065,8 +1064,8 @@ contract PepeToken is
         rewardCycleBlock = 7 days;
 
         // protocol
-        disruptiveTransferEnabledFrom = block.timestamp;
-        setMaxTxPercent(1); // 0.01% per transaction
+        // disruptiveTransferEnabledFrom = block.timestamp;
+        setMaxTxPercent(1); // 0.01% per transaction on launching 
         setSwapAndLiquifyEnabled(true);
 
         // approve contract
@@ -1078,7 +1077,7 @@ contract PepeToken is
         rewardCycleBlock = 5 minutes;
 
         // protocol
-        disruptiveTransferEnabledFrom = block.timestamp;
+        // disruptiveTransferEnabledFrom = block.timestamp;
         setMaxTxPercent(5); // 0.05% per transaction
         setSwapAndLiquifyEnabled(true);
 
