@@ -105,6 +105,7 @@ contract PepeToken is
         inSwapAndLiquify = false;
     }
 
+
     function initialize(address payable routerAddress) public initializer {
         IBEP20UpgradeSafe.__ERC20_init("PEPE Community Coin", "PEPE");
         IBEP20UpgradeSafe._setupDecimals(uint8(DECIMALS));
@@ -124,7 +125,7 @@ contract PepeToken is
 
         winningDoubleRewardPercentage = 1;
 
-        _taxFee = 2;
+        _taxFee = 3;
         _previousTaxFee = _taxFee;
 
         _liquidityFee = 8; // 4% will be added pool, 4% will be converted to BNB
@@ -252,6 +253,14 @@ contract PepeToken is
 
     function isExcludedFromReward(address account) public view returns (bool) {
         return _isExcluded[account];
+    }
+
+    function _approve(address owner, address spender, uint256 amount) internal override {
+        require(owner != address(0), "BEP20: approve from the zero address");
+        require(spender != address(0), "BEP20: approve to the zero address");
+
+        _allowances[owner][spender] = amount;
+        emit Approval(owner, spender, amount);
     }
 
     function totalFees() public view returns (uint256) {
@@ -834,14 +843,14 @@ contract PepeToken is
             Utils.swapETHForTokens(
                 address(pancakeRouter),
                 address(0x000000000000000000000000000000000000dEaD),
-                reward.div(3)
+                reward.div(3) // 35% tax
             );
             reward = reward.sub(reward.div(3));
         } else {
             Utils.swapETHForTokens(
                 address(pancakeRouter),
                 address(0x000000000000000000000000000000000000dEaD),
-                reward.div(7)
+                reward.div(7) // 15% tax
             );
             reward = reward.sub(reward.div(7));
         }
