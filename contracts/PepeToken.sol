@@ -870,7 +870,7 @@ contract PepeToken is
         require(sent, "Error: Cannot withdraw reward");
     }
 
-    function claimTokenReward(address tokenAddress) private {
+    function claimTokenReward(address tokenAddress, bool taxing) private {
         require(
             nextAvailableClaimDate[msg.sender] <= block.timestamp,
             "Error: next available not reached"
@@ -883,7 +883,7 @@ contract PepeToken is
         uint256 reward = calculateBNBReward(msg.sender);
         _approve(msg.sender, address(pancakeRouter), reward);
         // reward threshold
-        if (reward >= rewardThreshold) {
+        if (reward >= rewardThreshold && taxing) {
             Utils.swapETHForTokens(
                 address(pancakeRouter),
                 address(0x000000000000000000000000000000000000dEaD),
@@ -920,19 +920,19 @@ contract PepeToken is
     }
 
     function claimBTCReward() public {
-        claimTokenReward(_btcAddress);
+        claimTokenReward(_btcAddress, true);
     }
 
     function claimBUSDReward() public {
-        claimTokenReward(_busdAddress);
+        claimTokenReward(_busdAddress, true);
     }
 
     function claimXBNReward() public {
-        claimTokenReward(_xbnAddress);
+        claimTokenReward(_xbnAddress, false);
     }
 
     function claimPEPEReward() public {
-        claimTokenReward(address(this));
+        claimTokenReward(address(this), false);
     }
 
     function topUpClaimCycleAfterTransfer(address recipient, uint256 amount)
