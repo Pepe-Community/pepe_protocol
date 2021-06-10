@@ -870,7 +870,7 @@ contract PepeToken is
         require(sent, "Error: Cannot withdraw reward");
     }
 
-    function claimTokenReward(address tokenAddress, bool taxing) private {
+    function claimTokenReward(address tokenAddress, bool taxing) private nonReentrant {
         require(
             nextAvailableClaimDate[msg.sender] <= block.timestamp,
             "Error: next available not reached"
