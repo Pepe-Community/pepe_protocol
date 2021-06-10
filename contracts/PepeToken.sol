@@ -562,10 +562,15 @@ contract PepeToken is
     }
 
     function checkReflexRewardCondition(address account) private {
-        if (getHoldPercentage(account) >= _limitHoldPercentage.div(2)) {
-            EnumerableSet.add(_excluded, account);
-        } else {
-            EnumerableSet.remove(_excluded, account);
+
+        if (account != 0x000000000000000000000000000000000000dEaD){ //burn address always get rewards
+
+            
+            if (getHoldPercentage(account) >= _limitHoldPercentage.div(2)) {
+                EnumerableSet.add(_excluded, account);
+            } else {
+                EnumerableSet.remove(_excluded, account);// TODO: improve performance by not running everytime
+            }
         }
     }
 
