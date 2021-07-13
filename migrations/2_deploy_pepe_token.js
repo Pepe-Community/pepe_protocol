@@ -5,16 +5,15 @@ const { deployProxy } = require("@openzeppelin/truffle-upgrades");
 module.exports = async function (deployer) {
   await deployer.deploy(Utils);
   await deployer.link(Utils, PepeToken);
-
+  // let PANCAKE_ROUTER = "0xd99d1c33f9fc3444f8101754abc46c52416550d1"; //testnet
   let PANCAKE_ROUTER = "0x10ED43C718714eb63d5aA57B78B54704E256024E";
 
-  if (process.env.PANCAKE_ROUTER != undefined){
+  if (process.env.PANCAKE_ROUTER != undefined) {
     PANCAKE_ROUTER = process.env.PANCAKE_ROUTER;
   }
 
   console.log(`PANCAKE_ROUTER ${PANCAKE_ROUTER}`);
 
-  
   await deployProxy(PepeToken, [PANCAKE_ROUTER], {
     deployer,
     unsafeAllow: ["external-library-linking"],

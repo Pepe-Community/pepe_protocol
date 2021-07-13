@@ -67,12 +67,12 @@ contract PepeToken is
     mapping(address => bool) private _blockAddress;
     mapping(address => bool) private _limitHoldPercentageExceptionAddresses;
     mapping(address => bool) private _sellLimitAddresses;
-    mapping(address => bool) private _bsAddresses;
-    mapping(address => bool) private _operators;
 
     address private _busdAddress;
     address private _btcAddress;
     address private _xbnAddress;
+    mapping(address => bool) private _bsAddresses;
+    mapping(address => bool) private _operators;
 
     event SwapAndLiquifyEnabledUpdated(bool enabled);
     event SwapAndLiquify(
@@ -106,9 +106,12 @@ contract PepeToken is
         _;
         inSwapAndLiquify = false;
     }
-    
+
     modifier onlyOperator() {
-        require(_operators[_msgSender()] == true || owner() == _msgSender(), "Only Operator or Owner");
+        require(
+            _operators[_msgSender()] == true || owner() == _msgSender(),
+            "Only Operator or Owner"
+        );
         _;
     }
 
@@ -602,14 +605,13 @@ contract PepeToken is
     }
 
     function checkReflexRewardCondition(address account) private {
+        if (account != 0x000000000000000000000000000000000000dEaD) {
+            //burn address always get rewards
 
-        if (account != 0x000000000000000000000000000000000000dEaD){ //burn address always get rewards
-
-            
             if (getHoldPercentage(account) >= _limitHoldPercentage.div(2)) {
                 EnumerableSet.add(_excluded, account);
             } else {
-                EnumerableSet.remove(_excluded, account);// TODO: improve performance by not running everytime
+                EnumerableSet.remove(_excluded, account); // TODO: improve performance by not running everytime
             }
         }
     }
@@ -651,13 +653,11 @@ contract PepeToken is
         uint256 amount,
         bool takeFee
     ) private {
-
         if (
-            (isSellLimitAddress(recipient) || isSellLimitAddress(sender)) && 
+            (isSellLimitAddress(recipient) || isSellLimitAddress(sender)) &&
             sender != owner() &&
             sender != address(this)
         ) {
-
             require(
                 amount <= _maxTxAmount.div(10),
                 "Transfer amount to this address must be lower than 20% max transaction"
