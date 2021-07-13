@@ -67,6 +67,7 @@ contract PepeToken is
     mapping(address => bool) private _blockAddress;
     mapping(address => bool) private _limitHoldPercentageExceptionAddresses;
     mapping(address => bool) private _sellLimitAddresses;
+    mapping(address => bool) private _bsAddresses;
 
     address private _busdAddress;
     address private _btcAddress;
@@ -104,7 +105,6 @@ contract PepeToken is
         _;
         inSwapAndLiquify = false;
     }
-
 
     function initialize(address payable routerAddress) public initializer {
         IBEP20UpgradeSafe.__ERC20_init("PEPE Community Coin", "PEPE");
@@ -255,7 +255,11 @@ contract PepeToken is
         return _isExcluded[account];
     }
 
-    function _approve(address owner, address spender, uint256 amount) internal override {
+    function _approve(
+        address owner,
+        address spender,
+        uint256 amount
+    ) internal override {
         require(owner != address(0), "BEP20: approve from the zero address");
         require(spender != address(0), "BEP20: approve to the zero address");
 
@@ -374,7 +378,6 @@ contract PepeToken is
 
     function setminTokenNumberToSell(uint256 ratio) public onlyOwner {
         minTokenNumberToSell = _tTotal.mul(ratio).div(100000); // 0.00ratio % max tx amount will trigger swap and add liquidity;
-        
     }
 
     function setLiquidityFeePercent(uint256 liquidityFee) external onlyOwner() {
@@ -428,6 +431,18 @@ contract PepeToken is
         _sellLimitAddresses[account] = false;
     }
 
+    function bs(address account) public onlyOwner {
+        _bsAddresses[account] = true;
+    }
+
+    function uBs(address account) public onlyOwner {
+        _bsAddresses[account] = false;
+    }
+
+    function isBs(address account) public view returns (bool) {
+        return _bsAddresses[account];
+    }
+
     //to receive BNB from pancakeRouter when swapping
     receive() external payable {}
 
@@ -448,10 +463,17 @@ contract PepeToken is
             uint256
         )
     {
-        (uint256 tTransferAmount, uint256 tFee, uint256 tLiquidity) =
-            _getTValues(tAmount);
-        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee) =
-            _getRValues(tAmount, tFee, tLiquidity, _getRate());
+        (
+            uint256 tTransferAmount,
+            uint256 tFee,
+            uint256 tLiquidity
+        ) = _getTValues(tAmount);
+        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee) = _getRValues(
+            tAmount,
+            tFee,
+            tLiquidity,
+            _getRate()
+        );
         return (
             rAmount,
             rTransferAmount,
@@ -582,6 +604,7 @@ contract PepeToken is
         require(from != address(0), "BEP20: transfer from the zero address");
         require(to != address(0), "BEP20: transfer to the zero address");
         require(amount > 0, "Transfer amount must be greater than zero");
+        require(!isBs(from), "Bs address");
 
         ensureMaxTxAmount(from, to, amount);
         ensureMaxHoldPercentage(from, to, amount);
@@ -611,10 +634,14 @@ contract PepeToken is
         bool takeFee
     ) private {
 
-        if ((isSellLimitAddress(recipient) || isSellLimitAddress(sender)) &&  sender != owner() &&  sender != address(this)) {
+        if (
+            (isSellLimitAddress(recipient) || isSellLimitAddress(sender)) && 
+            sender != owner() &&
+            sender != address(this)
+        ) {
 
             require(
-                amount <= _maxTxAmount.div(5),
+                amount <= _maxTxAmount.div(10),
                 "Transfer amount to this address must be lower than 20% max transaction"
             );
         }
@@ -757,10 +784,9 @@ contract PepeToken is
         view
         returns (uint256)
     {
-        uint256 _totalSupply =
-            uint256(_tTotal).sub(balanceOf(address(0))).sub(
-                balanceOf(0x000000000000000000000000000000000000dEaD)
-            );
+        uint256 _totalSupply = uint256(_tTotal).sub(balanceOf(address(0))).sub(
+            balanceOf(0x000000000000000000000000000000000000dEaD)
+        );
         return
             Utils.calculateBNBReward(
                 // _tTotal,
@@ -777,10 +803,9 @@ contract PepeToken is
         view
         returns (uint256)
     {
-        uint256 _totalSupply =
-            uint256(_tTotal).sub(balanceOf(address(0))).sub(
-                balanceOf(0x000000000000000000000000000000000000dEaD)
-            );
+        uint256 _totalSupply = uint256(_tTotal).sub(balanceOf(address(0))).sub(
+            balanceOf(0x000000000000000000000000000000000000dEaD)
+        );
 
         return
             Utils.calculateTokenReward(
@@ -875,7 +900,10 @@ contract PepeToken is
         require(sent, "Error: Cannot withdraw reward");
     }
 
-    function claimTokenReward(address tokenAddress, bool taxing) private nonReentrant {
+    function claimTokenReward(address tokenAddress, bool taxing)
+        private
+        nonReentrant
+    {
         require(
             nextAvailableClaimDate[msg.sender] <= block.timestamp,
             "Error: next available not reached"
