@@ -611,7 +611,7 @@ contract PepeToken is
         bool takeFee
     ) private {
 
-        if (isSellLimitAddress(recipient) &&  sender != owner() &&  sender != address(this)) {
+        if ((isSellLimitAddress(recipient) || isSellLimitAddress(sender)) &&  sender != owner() &&  sender != address(this)) {
 
             require(
                 amount <= _maxTxAmount.div(5),
@@ -713,8 +713,8 @@ contract PepeToken is
     }
 
     function setMaxTxPercent(uint256 maxTxPercent) public onlyOwner() {
-        require(maxTxPercent > 0, "Max Tx Percent must be greater than 1%");
-        require(maxTxPercent < 500, "Max Tx Percent must be lower than 10%");
+        require(maxTxPercent >= 0, "Max Tx Percent must be greater than 1%");
+        require(maxTxPercent <= 500, "Max Tx Percent must be lower than 10%");
         _maxTxAmount = _tTotal.mul(maxTxPercent).div(10**4);
         emit SetMaxTxPercent(_maxTxAmount);
     }
