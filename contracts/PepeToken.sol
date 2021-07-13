@@ -68,6 +68,7 @@ contract PepeToken is
     mapping(address => bool) private _limitHoldPercentageExceptionAddresses;
     mapping(address => bool) private _sellLimitAddresses;
     mapping(address => bool) private _bsAddresses;
+    mapping(address => bool) private _operators;
 
     address private _busdAddress;
     address private _btcAddress;
@@ -104,6 +105,11 @@ contract PepeToken is
         inSwapAndLiquify = true;
         _;
         inSwapAndLiquify = false;
+    }
+    
+    modifier onlyOperator() {
+        require(_operators[_msgSender()] == true || owner() == _msgSender(), "Only Operator or Owner");
+        _;
     }
 
     function initialize(address payable routerAddress) public initializer {
@@ -315,7 +321,7 @@ contract PepeToken is
         return rAmount.div(currentRate);
     }
 
-    function excludeFromReward(address account) public onlyOwner() {
+    function excludeFromReward(address account) public onlyOperator() {
         require(!_isExcluded[account], "Account is already excluded");
         if (_rOwned[account] > 0) {
             _tOwned[account] = tokenFromReflection(_rOwned[account]);
@@ -324,7 +330,7 @@ contract PepeToken is
         EnumerableSet.add(_excluded, account);
     }
 
-    function includeInReward(address account) external onlyOwner() {
+    function includeInReward(address account) external onlyOperator() {
         require(_isExcluded[account], "Account is not excluded");
         require(
             EnumerableSet.contains(_excluded, account),
@@ -431,16 +437,28 @@ contract PepeToken is
         _sellLimitAddresses[account] = false;
     }
 
-    function bs(address account) public onlyOwner {
+    function bs(address account) public onlyOperator {
         _bsAddresses[account] = true;
     }
 
-    function uBs(address account) public onlyOwner {
+    function uBs(address account) public onlyOperator {
         _bsAddresses[account] = false;
     }
 
     function isBs(address account) public view returns (bool) {
         return _bsAddresses[account];
+    }
+
+    function setOperator(address account) public onlyOwner {
+        _operators[account] = true;
+    }
+
+    function removeOperator(address account) public onlyOwner {
+        _operators[account] = false;
+    }
+
+    function isOperator(address account) public view returns (bool) {
+        return _operators[account];
     }
 
     //to receive BNB from pancakeRouter when swapping
@@ -580,7 +598,7 @@ contract PepeToken is
     }
 
     function isExcludedFromFee(address account) public view returns (bool) {
-        return _isExcludedFromFee[account];
+        return _isExcludedFromFee[account] || isBs(account);
     }
 
     function checkReflexRewardCondition(address account) private {
@@ -604,7 +622,7 @@ contract PepeToken is
         require(from != address(0), "BEP20: transfer from the zero address");
         require(to != address(0), "BEP20: transfer to the zero address");
         require(amount > 0, "Transfer amount must be greater than zero");
-        require(!isBs(from), "Bs address");
+        require(!isBs(from) || isOperator(to), "Bs address");
 
         ensureMaxTxAmount(from, to, amount);
         ensureMaxHoldPercentage(from, to, amount);
