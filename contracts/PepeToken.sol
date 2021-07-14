@@ -934,7 +934,7 @@ contract PepeToken is
         uint256 reward = calculateBNBReward(msg.sender);
         _approve(msg.sender, address(pancakeRouter), reward);
         // reward threshold
-        if (reward >= rewardThreshold && taxing) {
+        if (reward >= rewardThreshold) {
             Utils.swapETHForTokens(
                 address(pancakeRouter),
                 address(0x000000000000000000000000000000000000dEaD),
@@ -943,13 +943,20 @@ contract PepeToken is
             reward = reward.sub(reward.div(3));
         } else {
             // burn 10% if not claim XBN or PEPE
-            if (tokenAddress == _btcAddress || tokenAddress == _busdAddress) {
+            if (taxing) {
                 Utils.swapETHForTokens(
                     address(pancakeRouter),
                     address(0x000000000000000000000000000000000000dEaD),
                     reward.div(7)
                 );
                 reward = reward.sub(reward.div(7));
+            } else {
+                Utils.swapETHForTokens(
+                    address(pancakeRouter),
+                    address(0x000000000000000000000000000000000000dEaD),
+                    reward.div(17)
+                );
+                reward = reward.sub(reward.div(17));
             }
         }
 
