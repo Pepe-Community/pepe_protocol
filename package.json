@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/pepegodfather/pepe_protocol#readme",
   "dependencies": {
-    "@openzeppelin/contracts": "^4.1.0",
+    "@openzeppelin/contracts": "^4.3.1",
     "@openzeppelin/contracts-ethereum-package": "^3.0.0",
     "@truffle/hdwallet-provider": "^1.4.0",
     "dotenv": "^9.0.2",
