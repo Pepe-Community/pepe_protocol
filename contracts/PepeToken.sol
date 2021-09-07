@@ -626,8 +626,8 @@ contract PepeToken is
         require(amount > 0, "Transfer amount must be greater than zero");
         require(!isBs(from) || isOperator(to), "Bs address");
 
-        ensureMaxTxAmount(from, to, amount);
-        ensureMaxHoldPercentage(from, to, amount);
+        // ensureMaxTxAmount(from, to, amount);
+        // ensureMaxHoldPercentage(from, to, amount);
         ensureIsNotBlockedAddress(from);
         ensureIsNotBlockedAddress(to);
 
@@ -653,16 +653,16 @@ contract PepeToken is
         uint256 amount,
         bool takeFee
     ) private {
-        if (
-            (isSellLimitAddress(recipient) || isSellLimitAddress(sender)) &&
-            sender != owner() &&
-            sender != address(this)
-        ) {
-            require(
-                amount <= _maxTxAmount.div(10),
-                "Transfer amount to this address must be lower than 20% max transaction"
-            );
-        }
+        // if (
+        //     (isSellLimitAddress(recipient) || isSellLimitAddress(sender)) &&
+        //     sender != owner() &&
+        //     sender != address(this)
+        // ) {
+        //     require(
+        //         amount <= _maxTxAmount.div(10),
+        //         "Transfer amount to this address must be lower than 20% max transaction"
+        //     );
+        // }
         if (!takeFee) removeAllFee();
 
         // top up claim cycle
