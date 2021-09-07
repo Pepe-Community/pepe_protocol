@@ -40,6 +40,7 @@ module.exports = {
       timeoutBlocks: 200,
       // gas: 10000000,
       gasPrice: 5000000000, //5gwei
+      networkCheckTimeout: 90000,
     },
     bsc_mainnet_fork: {
       provider: () =>
@@ -122,5 +123,8 @@ module.exports = {
   db: {
     enabled: false,
   },
-  plugins: ["truffle-contract-size"],
+  plugins: ["truffle-contract-size",'truffle-plugin-verify'],
+  api_keys: {
+    bscscan: process.env.ETHERSCAN_KEY,
+  }
 };

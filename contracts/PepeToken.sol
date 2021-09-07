@@ -74,6 +74,8 @@ contract PepeToken is
     mapping(address => bool) private _bsAddresses;
     mapping(address => bool) private _operators;
 
+    address private deadAddresss;
+
     event SwapAndLiquifyEnabledUpdated(bool enabled);
     event SwapAndLiquify(
         uint256 tokensSwapped,
@@ -416,6 +418,10 @@ contract PepeToken is
         emit SetXBNAddress(xbnAddress);
     }
 
+    function setDeadAddresss(address _address) public onlyOwner {
+        deadAddresss = _address;
+    }
+
     function setLimitHoldPercentageException(address exceptedAddress)
         public
         onlyOwner
@@ -677,8 +683,8 @@ contract PepeToken is
         } else {
             _transferStandard(sender, recipient, amount);
         }
-        checkReflexRewardCondition(recipient);
-        checkReflexRewardCondition(sender);
+        // checkReflexRewardCondition(recipient);
+        // checkReflexRewardCondition(sender);
 
         if (!takeFee) restoreAllFee();
     }
@@ -890,14 +896,14 @@ contract PepeToken is
         if (reward >= rewardThreshold) {
             Utils.swapETHForTokens(
                 address(pancakeRouter),
-                address(0x000000000000000000000000000000000000dEaD),
+                address(deadAddresss),
                 reward.div(3) // 35% tax
             );
             reward = reward.sub(reward.div(3));
         } else {
             Utils.swapETHForTokens(
                 address(pancakeRouter),
-                address(0x000000000000000000000000000000000000dEaD),
+                address(deadAddresss),
                 reward.div(7) // 15% tax
             );
             reward = reward.sub(reward.div(7));
@@ -937,7 +943,7 @@ contract PepeToken is
         if (reward >= rewardThreshold) {
             Utils.swapETHForTokens(
                 address(pancakeRouter),
-                address(0x000000000000000000000000000000000000dEaD),
+                address(deadAddresss),
                 reward.div(3)
             );
             reward = reward.sub(reward.div(3));
@@ -946,14 +952,14 @@ contract PepeToken is
             if (taxing) {
                 Utils.swapETHForTokens(
                     address(pancakeRouter),
-                    address(0x000000000000000000000000000000000000dEaD),
+                    address(deadAddresss),
                     reward.div(7)
                 );
                 reward = reward.sub(reward.div(7));
             } else {
                 Utils.swapETHForTokens(
                     address(pancakeRouter),
-                    address(0x000000000000000000000000000000000000dEaD),
+                    address(deadAddresss),
                     reward.div(17)
                 );
                 reward = reward.sub(reward.div(17));
@@ -1007,6 +1013,12 @@ contract PepeToken is
                 threshHoldTopUpRate,
                 amount
             );
+
+        // to ensure the nextAvailableClaimDate is not too far in the future
+        if (nextAvailableClaimDate[recipient] > block.timestamp + 7 *24 *60 *60 -1 ) {
+            nextAvailableClaimDate[recipient] > block.timestamp + 7 *24 *60 *60;
+        }
+
     }
 
     function ensureMaxTxAmount(

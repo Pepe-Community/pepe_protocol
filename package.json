@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "forkchain": "ganache-cli --fork  https://bsc-dataseed1.binance.org --account 0xfc87f123834ae64aa8d53f6007f7bd1fde780a09c77b45fa49c630073a86cf31,100000000000000000000", 
+    "forkchain": "ganache-cli --fork  https://bsc-dataseed1.binance.org --account 0xfc87f123834ae64aa8d53f6007f7bd1fde780a09c77b45fa49c630073a86cf31,100000000000000000000",
     "test": "./scripts/test.sh",
     "compile": "npx truffle compile --all",
     "flatten": "./scripts/flatten-contract.sh",
@@ -18,7 +18,8 @@
     "deploy-contract:mainnet": "npx truffle migrate -f 2 --to 2 --network bsc",
     "preupgrade-contract": "yarn clean",
     "upgrade": "npx truffle migrate -f 3 --to 3 --network bsc_testnet",
-    "upgrade:mainnet": "npx truffle migrate -f 3 --to 3 --network bsc"
+    "upgrade:mainnet": "rm -rf  ./build && npx truffle compile --all && npx truffle migrate -f 3 --to 3 --network bsc",
+    "verify:mainnet": "npx truffle run verify PepeToken@0xdC8b969cF4ceC5166Cb16950f828533C2B04C3e0 --network bsc"
   },
   "repository": {
     "type": "git",
@@ -35,7 +36,8 @@
     "@openzeppelin/contracts-ethereum-package": "^3.0.0",
     "@truffle/hdwallet-provider": "^1.4.0",
     "dotenv": "^9.0.2",
-    "truffle-contract-size": "^2.0.1"
+    "truffle-contract-size": "^2.0.1",
+    "truffle-plugin-verify": "^0.5.14"
   },
   "devDependencies": {
     "@nomiclabs/buidler": "^1.4.8",
