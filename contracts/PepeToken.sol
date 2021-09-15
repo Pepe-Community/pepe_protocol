@@ -652,10 +652,12 @@ contract PepeToken is
         _tokenTransfer(from, to, amount, takeFee);
     }
 
-    function _takeFeeWhenSell(address recipient, bool takeFee) private {
+    function _takeFeeWhenSell(address recipient, bool takeFee) private returns (bool) {
         if (!isSellLimitAddress(recipient) || !takeFee) {
             removeAllFee();
+            return false;
         }
+        return true;
     }
 
     //this method is responsible for taking all fee, if takeFee is true
@@ -675,7 +677,7 @@ contract PepeToken is
         //         "Transfer amount to this address must be lower than 20% max transaction"
         //     );
         // }
-        _takeFeeWhenSell(recipient, takeFee);
+        bool isTakenFee = _takeFeeWhenSell(recipient, takeFee);
 
         // top up claim cycle
         topUpClaimCycleAfterTransfer(recipient, amount);
@@ -692,7 +694,7 @@ contract PepeToken is
         // checkReflexRewardCondition(recipient);
         // checkReflexRewardCondition(sender);
 
-        if (!takeFee) restoreAllFee();
+        if (!isTakenFee) restoreAllFee();
     }
 
     function _transferStandard(
