@@ -1022,7 +1022,7 @@ contract PepeToken is
             nextAvailableClaimDate[recipient] >
             block.timestamp + 7 * 24 * 60 * 60 - 1
         ) {
-            nextAvailableClaimDate[recipient] >
+            nextAvailableClaimDate[recipient] =
                 block.timestamp + 7 * 24 * 60 * 60;
         }
     }
