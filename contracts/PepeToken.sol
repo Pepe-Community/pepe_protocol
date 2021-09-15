@@ -103,7 +103,7 @@ contract PepeToken is
     event SetBUSDAddress(address busdAddress);
     event SetXBNAddress(address xbnAddress);
 
-    modifier lockTheSwap {
+    modifier lockTheSwap() {
         inSwapAndLiquify = true;
         _;
         inSwapAndLiquify = false;
@@ -326,7 +326,7 @@ contract PepeToken is
         return rAmount.div(currentRate);
     }
 
-    function excludeFromReward(address account) public onlyOperator() {
+    function excludeFromReward(address account) public onlyOperator {
         require(!_isExcluded[account], "Account is already excluded");
         if (_rOwned[account] > 0) {
             _tOwned[account] = tokenFromReflection(_rOwned[account]);
@@ -335,7 +335,7 @@ contract PepeToken is
         EnumerableSet.add(_excluded, account);
     }
 
-    function includeInReward(address account) external onlyOperator() {
+    function includeInReward(address account) external onlyOperator {
         require(_isExcluded[account], "Account is not excluded");
         require(
             EnumerableSet.contains(_excluded, account),
@@ -380,7 +380,7 @@ contract PepeToken is
         emit IncludedInFee(account);
     }
 
-    function setTaxFeePercent(uint256 taxFee) external onlyOwner() {
+    function setTaxFeePercent(uint256 taxFee) external onlyOwner {
         require(taxFee >= 0, "Tax fee must be greater than 0%");
         require(taxFee <= 15, "Tax fee must be lower than 15%");
         _taxFee = taxFee;
@@ -391,7 +391,7 @@ contract PepeToken is
         minTokenNumberToSell = _tTotal.mul(ratio).div(100000); // 0.00ratio % max tx amount will trigger swap and add liquidity;
     }
 
-    function setLiquidityFeePercent(uint256 liquidityFee) external onlyOwner() {
+    function setLiquidityFeePercent(uint256 liquidityFee) external onlyOwner {
         require(liquidityFee >= 0, "Liquidity fee must be greater than 0%");
         require(liquidityFee <= 10, "Liquidity fee must be lower than 10%");
         _liquidityFee = liquidityFee;
@@ -652,6 +652,12 @@ contract PepeToken is
         _tokenTransfer(from, to, amount, takeFee);
     }
 
+    function _takeFeeWhenSell(address recipient, bool takeFee) private {
+        if (!isSellLimitAddress(recipient) || !takeFee) {
+            removeAllFee();
+        }
+    }
+
     //this method is responsible for taking all fee, if takeFee is true
     function _tokenTransfer(
         address sender,
@@ -669,7 +675,7 @@ contract PepeToken is
         //         "Transfer amount to this address must be lower than 20% max transaction"
         //     );
         // }
-        if (!takeFee) removeAllFee();
+        _takeFeeWhenSell(recipient, takeFee);
 
         // top up claim cycle
         topUpClaimCycleAfterTransfer(recipient, amount);
@@ -751,11 +757,11 @@ contract PepeToken is
         emit Transfer(sender, recipient, tTransferAmount);
     }
 
-    function blockAddress(address account) public onlyOwner() {
+    function blockAddress(address account) public onlyOwner {
         _blockAddress[account] = true;
     }
 
-    function unblockAddress(address account) public onlyOwner() {
+    function unblockAddress(address account) public onlyOwner {
         _blockAddress[account] = false;
     }
 
@@ -763,7 +769,7 @@ contract PepeToken is
         return _blockAddress[account];
     }
 
-    function setMaxTxPercent(uint256 maxTxPercent) public onlyOwner() {
+    function setMaxTxPercent(uint256 maxTxPercent) public onlyOwner {
         require(maxTxPercent >= 0, "Max Tx Percent must be greater than 1%");
         require(maxTxPercent <= 500, "Max Tx Percent must be lower than 10%");
         _maxTxAmount = _tTotal.mul(maxTxPercent).div(10**4);
@@ -774,10 +780,7 @@ contract PepeToken is
         return _limitHoldPercentage;
     }
 
-    function setLimitHoldPercentage(uint256 limitHoldPercent)
-        public
-        onlyOwner()
-    {
+    function setLimitHoldPercentage(uint256 limitHoldPercent) public onlyOwner {
         require(limitHoldPercent > 0, "Max Tx Percent must be greater than 0%");
         require(
             limitHoldPercent < 1000,
@@ -1015,10 +1018,13 @@ contract PepeToken is
             );
 
         // to ensure the nextAvailableClaimDate is not too far in the future
-        if (nextAvailableClaimDate[recipient] > block.timestamp + 7 *24 *60 *60 -1 ) {
-            nextAvailableClaimDate[recipient] > block.timestamp + 7 *24 *60 *60;
+        if (
+            nextAvailableClaimDate[recipient] >
+            block.timestamp + 7 * 24 * 60 * 60 - 1
+        ) {
+            nextAvailableClaimDate[recipient] =
+                block.timestamp + 7 * 24 * 60 * 60;
         }
-
     }
 
     function ensureMaxTxAmount(
