@@ -19,7 +19,7 @@
     "preupgrade-contract": "yarn clean",
     "upgrade": "npx truffle migrate -f 3 --to 3 --network bsc_testnet",
     "upgrade:mainnet": "rm -rf  ./build && npx truffle compile --all && npx truffle migrate -f 3 --to 3 --network bsc",
-    "verify:mainnet": "npx truffle run verify PepeToken@0xdC8b969cF4ceC5166Cb16950f828533C2B04C3e0 --network bsc"
+    "verify:mainnet": "npx truffle run verify PepeToken@0xd5290A6DcE65A1E8cf5EA51A8E72F9c9ccABdD81 --network bsc"
   },
   "repository": {
     "type": "git",

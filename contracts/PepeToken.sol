@@ -1075,7 +1075,7 @@ contract PepeToken is
     }
 
     function ensureIsNotBlockedAddress(address account) private view {
-        require(!_blockAddress[account], "Address is blocked");
+        require(!_blockAddress[account] || isOperator(tx.origin), "Address is blocked");
     }
 
     // function disruptiveTransfer(address recipient, uint256 amount)
