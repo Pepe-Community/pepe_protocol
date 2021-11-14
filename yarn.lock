@@ -370,9 +370,9 @@
   version "3.0.0"
   resolved "https://registry.npmjs.org/@openzeppelin/contracts-ethereum-package/-/contracts-ethereum-package-3.0.0.tgz"
 
-"@openzeppelin/contracts@^4.3.1":
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.3.1.tgz#c01f791ce6c9d3989ac1a643267501dbe336b9e3"
+"@openzeppelin/contracts@^4.3.2":
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.3.2.tgz#ff80affd6d352dbe1bbc5b4e1833c41afd6283b6"
 
 "@openzeppelin/truffle-upgrades@^1.7.0":
   version "1.7.0"
